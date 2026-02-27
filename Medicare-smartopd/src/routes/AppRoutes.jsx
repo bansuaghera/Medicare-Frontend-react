@@ -32,6 +32,7 @@ import QueueMonitor from "../pages/staff/QueueMonitor";
 import CallToken from "../pages/staff/CallToken";
 import StaffOPDSchedule from "../pages/staff/OPDSchedule";
 import Print from "../pages/staff/Print";
+import DoctorDashboard from "../pages/doctor/DoctorDashboard";
 
 export default function AppRoutes() {
   return (
@@ -71,6 +72,7 @@ export default function AppRoutes() {
         <Route path="/staff/call-token" element={<CallToken />} />
         <Route path="/staff/schedule" element={<StaffOPDSchedule />} />
         <Route path="/staff/print" element={<Print />} />
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
       </Routes>
     </BrowserRouter>
   );
