@@ -1,0 +1,233 @@
+/* Prescription & Template Specific Styles */
+
+/* Prescription Detail Paper View */
+.prescription-view {
+    background: white;
+    border-radius: 20px;
+    padding: 60px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    max-width: 900px;
+    margin: 0 auto;
+    border: 1px solid #f1f5f9;
+}
+
+.pres-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.clinic-info h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.clinic-info p {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.pres-date {
+    text-align: right;
+}
+
+.pres-date label {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.pres-date span {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.info-block label {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.info-block h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.info-block span {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.diagnosis-box {
+    margin-bottom: 40px;
+}
+
+.diagnosis-box label {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.diagnosis-box p {
+    font-size: 16px;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+/* Medicines List in Prescription */
+.pres-med-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.med-item {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.med-details h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.med-details p {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.dosage-info {
+    text-align: right;
+}
+
+.dosage-info .freq {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.dosage-info .duration {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* Templates Grid */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.template-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.template-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.card-actions {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    gap: 12px;
+}
+
+.card-actions button {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.template-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-right: 80px;
+}
+
+.template-meta {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+.template-footer {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 12px;
+    color: #94a3b8;
+    padding-top: 15px;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* Add Template Sidebar */
+.template-form-container {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 32px;
+}
+
+.sidebar-stats-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    margin-bottom: 24px;
+}
+
+.stat-row {
+    margin-bottom: 16px;
+}
+
+.stat-row:last-child {
+    margin-bottom: 0;
+}
+
+.stat-row h4 {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.stat-row p {
+    font-size: 12px;
+    color: #64748b;
+}
