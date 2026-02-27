@@ -29,6 +29,9 @@ import StaffPatients from "../pages/staff/Patients";
 import BookAppointment from "../pages/staff/BookAppointment";
 import GenerateToken from "../pages/staff/GenerateToken";
 import QueueMonitor from "../pages/staff/QueueMonitor";
+import CallToken from "../pages/staff/CallToken";
+import StaffOPDSchedule from "../pages/staff/OPDSchedule";
+import Print from "../pages/staff/Print";
 
 export default function AppRoutes() {
   return (
@@ -65,6 +68,9 @@ export default function AppRoutes() {
         <Route path="/staff/appointments" element={<BookAppointment />} />
         <Route path="/staff/tokens" element={<GenerateToken />} />
         <Route path="/staff/queue" element={<QueueMonitor />} />
+        <Route path="/staff/call-token" element={<CallToken />} />
+        <Route path="/staff/schedule" element={<StaffOPDSchedule />} />
+        <Route path="/staff/print" element={<Print />} />
       </Routes>
     </BrowserRouter>
   );
