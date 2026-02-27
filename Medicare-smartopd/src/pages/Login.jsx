@@ -24,6 +24,13 @@ export default function Login() {
       return;
     }
 
+    // Staff Check
+    if (email === "staff@medicare" && password === "123") {
+      alert("Staff Login Successful!");
+      navigate("/staff/dashboard");
+      return;
+    }
+
     try {
       const res = await API.post("/auth/login", {
         email,
