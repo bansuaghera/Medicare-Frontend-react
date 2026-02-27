@@ -32,6 +32,13 @@ import QueueMonitor from "../pages/staff/QueueMonitor";
 import CallToken from "../pages/staff/CallToken";
 import StaffOPDSchedule from "../pages/staff/OPDSchedule";
 import Print from "../pages/staff/Print";
+import DoctorDashboard from "../pages/doctor/DoctorDashboard";
+import DoctorAppointments from "../pages/doctor/Appointments";
+import DoctorPatients from "../pages/doctor/Patients";
+import DoctorExamination from "../pages/doctor/Examination";
+import DoctorPrescriptions from "../pages/doctor/Prescriptions";
+import DoctorSchedule from "../pages/doctor/Schedule";
+import DoctorFollowups from "../pages/doctor/Followups";
 
 export default function AppRoutes() {
   return (
@@ -71,6 +78,13 @@ export default function AppRoutes() {
         <Route path="/staff/call-token" element={<CallToken />} />
         <Route path="/staff/schedule" element={<StaffOPDSchedule />} />
         <Route path="/staff/print" element={<Print />} />
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+        <Route path="/doctor/patients" element={<DoctorPatients />} />
+        <Route path="/doctor/examination" element={<DoctorExamination />} />
+        <Route path="/doctor/prescriptions" element={<DoctorPrescriptions />} />
+        <Route path="/doctor/schedule" element={<DoctorSchedule />} />
+        <Route path="/doctor/followups" element={<DoctorFollowups />} />
       </Routes>
     </BrowserRouter>
   );
