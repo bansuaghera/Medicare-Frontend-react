@@ -42,6 +42,13 @@ import DoctorSchedule from "../pages/doctor/Schedule";
 import DoctorFollowups from "../pages/doctor/Followups";
 import DoctorProfile from "../pages/doctor/Profile";
 import UserDashboard from "../pages/user/UserDashboard";
+import UserDoctors from "../pages/user/Doctors";
+import UserBookAppointment from "../pages/user/BookAppointment";
+import UserAppointments from "../pages/user/MyAppointments";
+import UserTokenStatus from "../pages/user/TokenStatus";
+import UserPrescriptions from "../pages/user/Prescriptions";
+import UserHistory from "../pages/user/History";
+import UserProfileSettings from "../pages/user/Profile";
 
 export default function AppRoutes() {
   return (
@@ -91,6 +98,13 @@ export default function AppRoutes() {
         <Route path="/doctor/followups" element={<DoctorFollowups />} />
         <Route path="/doctor/profile" element={<DoctorProfile />} />
         <Route path="/user/dashboard" element={<UserDashboard />} />
+        <Route path="/user/doctors" element={<UserDoctors />} />
+        <Route path="/user/book-appointment" element={<UserBookAppointment />} />
+        <Route path="/user/appointments" element={<UserAppointments />} />
+        <Route path="/user/token-status" element={<UserTokenStatus />} />
+        <Route path="/user/prescriptions" element={<UserPrescriptions />} />
+        <Route path="/user/history" element={<UserHistory />} />
+        <Route path="/user/profile" element={<UserProfileSettings />} />
       </Routes>
     </BrowserRouter>
   );
