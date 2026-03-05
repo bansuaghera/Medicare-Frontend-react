@@ -38,6 +38,13 @@ export default function Login() {
       return;
     }
 
+    // User Check
+    if (email === "user@medicare" && password === "123") {
+      alert("User Login Successful!");
+      navigate("/user/dashboard");
+      return;
+    }
+
     try {
       const res = await API.post("/auth/login", {
         email,

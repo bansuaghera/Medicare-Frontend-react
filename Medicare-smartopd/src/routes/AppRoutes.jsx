@@ -41,6 +41,7 @@ import DoctorPrescriptions from "../pages/doctor/Prescriptions";
 import DoctorSchedule from "../pages/doctor/Schedule";
 import DoctorFollowups from "../pages/doctor/Followups";
 import DoctorProfile from "../pages/doctor/Profile";
+import UserDashboard from "../pages/user/UserDashboard";
 
 export default function AppRoutes() {
   return (
@@ -89,6 +90,7 @@ export default function AppRoutes() {
         <Route path="/doctor/schedule" element={<DoctorSchedule />} />
         <Route path="/doctor/followups" element={<DoctorFollowups />} />
         <Route path="/doctor/profile" element={<DoctorProfile />} />
+        <Route path="/user/dashboard" element={<UserDashboard />} />
       </Routes>
     </BrowserRouter>
   );
