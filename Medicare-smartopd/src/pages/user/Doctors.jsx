@@ -1,6 +1,7 @@
 import UserLayout from "../../layouts/UserLayout";
 import { Link } from "react-router-dom";
-import { UserCircle, Calendar, Star } from "lucide-react";
+import { UserCircle, Calendar, Star, Search } from "lucide-react";
+import { useState } from "react";
 
 export default function Doctors() {
     const doctors = [
@@ -46,16 +47,34 @@ export default function Doctors() {
         }
     ];
 
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredDoctors = doctors.filter(doctor => 
+        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <UserLayout panelTitle="User Panel">
             <div className="dashboard-page" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
                 <div style={{ marginBottom: '32px' }}>
                     <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#111827' }}>Find a Doctor</h1>
-                    <p style={{ color: '#6b7280', fontSize: '15px' }}>Browse our expert doctors</p>
+                    <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '16px' }}>Browse our expert doctors</p>
+                    
+                    <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
+                        <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                        <input 
+                            type="text" 
+                            placeholder="Search by doctor name or specialty..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '15px' }} 
+                        />
+                    </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-                    {doctors.map((doctor, index) => (
+                    {filteredDoctors.length > 0 ? filteredDoctors.map((doctor, index) => (
                         <div key={index} style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb', padding: '24px', display: 'flex', flexDirection: 'column' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                                 <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: doctor.bgColor, color: doctor.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -87,7 +106,11 @@ export default function Doctors() {
                                 Book Appointment
                             </Link>
                         </div>
-                    ))}
+                    )) : (
+                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '48px', color: '#6b7280', background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb' }}>
+                            No doctors found matching "{searchTerm}"
+                        </div>
+                    )}
                 </div>
             </div>
         </UserLayout>

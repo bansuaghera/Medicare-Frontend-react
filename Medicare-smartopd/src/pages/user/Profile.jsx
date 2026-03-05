@@ -1,7 +1,16 @@
 import UserLayout from "../../layouts/UserLayout";
+import { useNavigate } from "react-router-dom";
 import { User, Mail, ChevronDown, Calendar, Save } from "lucide-react";
 
 export default function Profile() {
+    const navigate = useNavigate();
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        alert("Profile updated successfully!");
+        navigate("/user/dashboard");
+    };
+
     return (
         <UserLayout panelTitle="User Panel">
             <div className="dashboard-page" style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 16px' }}>
@@ -21,7 +30,7 @@ export default function Profile() {
                         </div>
                     </div>
 
-                    <form style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>First Name</label>
@@ -88,11 +97,11 @@ export default function Profile() {
                         </div>
 
                         <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
-                            <button type="button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: '8px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
+                            <button type="submit" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: '8px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
                                 <Save size={18} />
                                 Save Changes
                             </button>
-                            <button type="button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', color: '#374151', padding: '12px 24px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
+                            <button type="button" onClick={() => navigate('/user/dashboard')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', color: '#374151', padding: '12px 24px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
                                 Cancel
                             </button>
                         </div>

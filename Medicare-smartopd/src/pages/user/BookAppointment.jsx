@@ -1,8 +1,16 @@
 import UserLayout from "../../layouts/UserLayout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Calendar, ChevronLeft, ChevronDown } from "lucide-react";
 
 export default function BookAppointment() {
+    const navigate = useNavigate();
+
+    const handleBooking = (e) => {
+        e.preventDefault();
+        alert("Appointment booked successfully!");
+        navigate("/user/appointments");
+    };
+
     return (
         <UserLayout panelTitle="User Panel">
             <div className="dashboard-page" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 16px' }}>
@@ -17,7 +25,7 @@ export default function BookAppointment() {
                 </div>
 
                 <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb', padding: '32px' }}>
-                    <form style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <form onSubmit={handleBooking} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
                                 Select Doctor <span style={{ color: '#ef4444' }}>*</span>
@@ -66,7 +74,7 @@ export default function BookAppointment() {
                         </div>
 
                         <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
-                            <button type="button" style={{ flex: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#10b981', color: '#fff', padding: '12px', borderRadius: '8px', border: 'none', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}>
+                            <button type="submit" style={{ flex: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#10b981', color: '#fff', padding: '12px', borderRadius: '8px', border: 'none', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}>
                                 <Calendar size={20} />
                                 Book Appointment
                             </button>

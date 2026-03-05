@@ -78,7 +78,7 @@ export default function UserLayout({ children, panelTitle = "User Panel" }) {
                             <Bell size={22} />
                             <span className="notif-badge"></span>
                         </button>
-                        <Link to="/user/profile" className="user-profile" style={{ textDecoration: 'none' }}>
+                        <Link to="/user/profile" className="usser-profile" style={{ textDecoration: 'none' }}>
                             <div className="user-avatar" style={{ backgroundColor: '#10b981' }}>PT</div>
                         </Link>
                     </div>

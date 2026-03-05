@@ -1,7 +1,10 @@
 import UserLayout from "../../layouts/UserLayout";
+import { useNavigate } from "react-router-dom";
 import { Calendar, Clock, MapPin, Search } from "lucide-react";
+import { useState } from "react";
 
 export default function MyAppointments() {
+    const navigate = useNavigate();
     const appointments = [
         {
             doctor: "Dr. Sarah Johnson",
@@ -38,16 +41,35 @@ export default function MyAppointments() {
         }
     ];
 
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredAppointments = appointments.filter(apt => 
+        apt.doctor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <UserLayout panelTitle="User Panel">
             <div className="dashboard-page" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
                 <div style={{ marginBottom: '32px' }}>
                     <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#111827', margin: '0 0 8px 0' }}>My Appointments</h1>
-                    <p style={{ color: '#6b7280', fontSize: '15px', margin: 0 }}>View and manage your appointments</p>
+                    <p style={{ color: '#6b7280', fontSize: '15px', margin: '0 0 16px 0' }}>View and manage your appointments</p>
+                    
+                    <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
+                        <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                        <input 
+                            type="text" 
+                            placeholder="Search by doctor or status..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '15px' }} 
+                        />
+                    </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    {appointments.map((apt, index) => (
+                    {filteredAppointments.length > 0 ? filteredAppointments.map((apt, index) => (
                         <div key={index} style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb', padding: '24px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
                                 <div>
@@ -78,16 +100,20 @@ export default function MyAppointments() {
                             
                             {apt.actionable && (
                                 <div style={{ display: 'flex', gap: '16px' }}>
-                                    <button style={{ background: '#f3f4f6', color: '#374151', padding: '10px 24px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
+                                    <button onClick={() => { alert('Redirecting to reschedule...'); navigate('/user/book-appointment'); }} style={{ background: '#f3f4f6', color: '#374151', padding: '10px 24px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
                                         Reschedule
                                     </button>
-                                    <button style={{ background: '#fef2f2', color: '#ef4444', padding: '10px 24px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
+                                    <button onClick={() => alert('Appointment successfully cancelled.')} style={{ background: '#fef2f2', color: '#ef4444', padding: '10px 24px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
                                         Cancel
                                     </button>
                                 </div>
                             )}
                         </div>
-                    ))}
+                    )) : (
+                        <div style={{ textAlign: 'center', padding: '48px', color: '#6b7280', background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb' }}>
+                            No appointments found matching "{searchTerm}"
+                        </div>
+                    )}
                 </div>
             </div>
         </UserLayout>
