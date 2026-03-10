@@ -11,12 +11,16 @@ import {
     User,
     LogOut,
     Search,
-    Bell
+    Bell,
+    Sun,
+    Moon
 } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 import "../styles/adminLayout.css";
 
 export default function UserLayout({ children, panelTitle = "User Panel" }) {
     const location = useLocation();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     const menuItems = [
         { icon: <Home size={20} />, label: "Home", path: "/user/dashboard" },
@@ -74,12 +78,16 @@ export default function UserLayout({ children, panelTitle = "User Panel" }) {
                     </div>
 
                     <div className="header-actions">
+                        {/* Theme Toggle Button */}
+                        <button onClick={toggleTheme} className="notification-btn" title="Toggle Dark Mode" style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                            {isDarkMode ? <Sun size={22} /> : <Moon size={22} />}
+                        </button>
                         <button className="notification-btn">
                             <Bell size={22} />
                             <span className="notif-badge"></span>
-                        </button>
+                        </button>       
                         <Link to="/user/profile" className="usser-profile" style={{ textDecoration: 'none' }}>
-                            <div className="user-avatar" style={{ backgroundColor: '#10b981' }}>PT</div>
+                            <div className="user-avatar" style={{ backgroundColor: 'var(--pill-success-text)' }}>PT</div>
                         </Link>
                     </div>
                 </header>

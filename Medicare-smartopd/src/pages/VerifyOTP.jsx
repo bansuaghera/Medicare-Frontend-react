@@ -1,12 +1,16 @@
 import { useNavigate, Link } from "react-router-dom";
 import {
     ShieldCheck,
-    MoveLeft
+    MoveLeft,
+    Sun,
+    Moon
 } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 import "../styles/verifyOTP.css";
 
 export default function VerifyOTP() {
     const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     const handleVerify = (e) => {
         e.preventDefault();
@@ -15,7 +19,33 @@ export default function VerifyOTP() {
     };
 
     return (
-        <div className="verify-otp-container">
+        <div className={`verify-otp-container ${isDarkMode ? "dark" : "light"}`}>
+
+            {/* Theme Toggle Button */}
+            <button 
+                onClick={toggleTheme} 
+                style={{
+                  position: 'absolute',
+                  top: '24px',
+                  right: '24px',
+                  zIndex: 100,
+                  background: isDarkMode ? '#1e293b' : '#fff',
+                  border: `1px solid ${isDarkMode ? '#334155' : '#e5e7eb'}`,
+                  borderRadius: '50%',
+                  width: '48px',
+                  height: '48px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: isDarkMode ? '#f8fafc' : '#111827',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s ease'
+                }}
+                title="Toggle Dark Mode"
+            >
+                {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+            </button>
 
             {/* LEFT SIDE */}
             <div className="left-section">

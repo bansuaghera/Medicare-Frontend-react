@@ -131,13 +131,14 @@
 /* RIGHT SIDE */
 .right-section {
   flex: 1.5;
-  background: #f8fafc;
+  background: var(--bg-primary, #f8fafc);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding: 40px;
   overflow-y: auto;
+  transition: background-color 0.4s ease;
 }
 
 .top-logo {
@@ -153,25 +154,26 @@
 .register-card {
   width: 100%;
   max-width: 520px;
-  background: white;
+  background: var(--bg-secondary, white);
   padding: 40px 50px;
   border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 6px -1px var(--shadow-sm, rgba(0, 0, 0, 0.05)), 0 20px 25px -5px var(--shadow-lg, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.02));
+  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .register-card h2 {
   text-align: center;
   font-size: 32px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary, #1a1a1a);
   margin-bottom: 10px;
 }
 
 .subtitle {
   text-align: center;
   font-size: 15px;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
   margin-bottom: 35px;
 }
 
@@ -208,10 +210,10 @@
   padding: 16px 16px 16px 65px !important;
   /* Forced padding to prevent overrides */
   border-radius: 12px;
-  border: 1px solid transparent;
-  background: #f1f5f9;
+  border: 1px solid var(--border-color, transparent);
+  background: var(--bg-primary, #f1f5f9);
   font-size: 15px;
-  color: #1e293b;
+  color: var(--text-primary, #1e293b);
   transition: all 0.3s ease;
 }
 
