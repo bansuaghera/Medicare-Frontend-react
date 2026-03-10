@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import LandingPage from "../pages/LandingPage";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
 import ForgotPassword from "../pages/ForgotPassword";
 import VerifyOTP from "../pages/VerifyOTP";
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -56,6 +58,8 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
