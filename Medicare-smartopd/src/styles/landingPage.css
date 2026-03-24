@@ -22,6 +22,36 @@
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+[data-theme="dark"] {
+    --secondary: #f8fafc;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --bg-light: #0b1120;
+    --white: #111827;
+    --glass: rgba(11, 17, 32, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle-btn {
+    background: var(--white);
+    border: 1px solid var(--glass-border);
+    color: var(--secondary);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-in-out);
+    margin-right: 1rem;
+}
+
+.theme-toggle-btn:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -67,7 +97,7 @@ body {
     right: 0;
     border-radius: 0;
     padding: 0.75rem 5%;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--glass-border);
 }
 
 .nav-brand {
@@ -142,6 +172,7 @@ body {
 
 .nav-auth {
     display: flex;
+    align-items: center; /* ensures the theme toggle lines up with buttons */
     gap: 1rem;
 }
 
@@ -265,7 +296,7 @@ body {
     height: auto;
     border-radius: 40px;
     box-shadow: var(--shadow-2xl);
-    border: 8px solid white;
+    border: 8px solid var(--white);
 }
 
 .floating-stats {
@@ -328,7 +359,7 @@ body {
 /* --- STATS SECTION --- */
 .stats-bar {
     padding: 3rem 5%;
-    background: var(--secondary);
+    background: var(--bg-light); /* changed from secondary to fit dark/light appropriately */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
@@ -338,14 +369,14 @@ body {
 
 .stat-item {
     text-align: center;
-    color: white;
+    color: var(--secondary);
 }
 
 .stat-item h3 {
     font-size: 2.75rem;
     font-weight: 800;
     margin-bottom: 0.25rem;
-    background: linear-gradient(135deg, white, var(--primary-light));
+    background: linear-gradient(135deg, var(--secondary), var(--primary-light));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -362,7 +393,7 @@ body {
 /* --- FEATURES --- */
 .features {
     padding: 8rem 5%;
-    background: white;
+    background: var(--white);
 }
 
 .section-head {
@@ -408,14 +439,14 @@ body {
 .feature-card:hover {
     transform: translateY(-12px);
     border-color: var(--primary);
-    background: white;
+    background: var(--white);
     box-shadow: var(--shadow-2xl);
 }
 
 .feature-icon-box {
     width: 64px;
     height: 64px;
-    background: white;
+    background: var(--white);
     color: var(--primary);
     border-radius: 18px;
     display: flex;
@@ -448,7 +479,7 @@ body {
 /* --- FOOTER --- */
 .footer {
     padding: 6rem 5% 2rem;
-    background: var(--secondary);
+    background: #0F172A; /* Forces absolute dark on footer */
     color: white;
 }
 

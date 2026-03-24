@@ -228,7 +228,7 @@
   border: 1px solid #e1e5e8;
   background: #f8fafc;
   font-size: 15px;
-  color: #1e293b;
+  color: var(--text-primary, #1e293b);
   transition: all 0.3s ease;
 }
 

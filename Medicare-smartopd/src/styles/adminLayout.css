@@ -4,10 +4,11 @@
     --sidebar-width: 260px;
     --header-height: 70px;
     --primary-color: #0fb48c;
-    --bg-light: #f8fafc;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
+    --bg-light: var(--bg-primary, #f8fafc);
+    --text-main: var(--text-primary, #1e293b);
+    --text-muted: var(--text-secondary, #64748b);
+    --border-color: var(--border-color, #e2e8f0);
+    --bg-surface: var(--bg-secondary, #ffffff);
 }
 
 * {
@@ -26,7 +27,7 @@
 /* SIDEBAR */
 .sidebar {
     width: var(--sidebar-width);
-    background: white;
+    background: var(--bg-surface);
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
@@ -88,12 +89,12 @@
 }
 
 .menu-item:hover {
-    background: #f1f5f9;
+    background: var(--bg-primary);
     color: var(--primary-color);
 }
 
 .menu-item.active {
-    background: #e7f7f3;
+    background: var(--pill-success-bg, #e7f7f3);
     color: var(--primary-color);
 }
 
@@ -127,7 +128,7 @@
 /* HEADER */
 .dashboard-header {
     height: var(--header-height);
-    background: white;
+    background: var(--bg-surface);
     border-bottom: 1px solid var(--border-color);
     padding: 0 32px;
     display: flex;
@@ -141,7 +142,7 @@
 .search-bar {
     display: flex;
     align-items: center;
-    background: #f1f5f9;
+    background: var(--bg-primary);
     border-radius: 10px;
     padding: 8px 16px;
     width: 100%;

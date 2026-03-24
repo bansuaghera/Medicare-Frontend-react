@@ -1,8 +1,60 @@
-/* Global reset and baseline styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f9fafb;
+  --bg-quaternary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-tertiary: #374151;
+  --border-color: #e5e7eb;
+  --border-input: #d1d5db;
+
+  /* Additional colors for pills, icons */
+  --pill-success-bg: #d1fae5;
+  --pill-success-text: #10b981;
+  --pill-info-bg: #dbeafe;
+  --pill-info-text: #3b82f6;
+  --pill-purple-bg: #f3e8ff;
+  --pill-purple-text: #a855f7;
+  --pill-orange-bg: #ffedd5;
+  --pill-orange-text: #f97316;
+
+  --shadow-sm: rgba(0, 0, 0, 0.05);
+  --shadow-lg: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  /* Premium Dark Mode Colors */
+  --bg-primary: #0b1120;       /* Very dark navy / almost black for main background */
+  --bg-secondary: #111827;     /* Deep gray/navy for cards, containers */
+  --bg-tertiary: #1f2937;      /* Hover states, minor elements */
+  --bg-quaternary: #374151;    /* Borders or active states */
+  
+  --text-primary: #f8fafc;     /* Brightest text for headings */
+  --text-secondary: #94a3b8;   /* Soft gray for standard body text */
+  --text-tertiary: #cbd5e1;    /* Intermediate text */
+  
+  --border-color: #1e293b;     /* Very subtle card borders */
+  --border-input: #334155;     /* Input fields, deeper lines */
+
+  /* High contrast pills (more vibrant against dark bg) */
+  --pill-success-bg: rgba(16, 185, 129, 0.15);
+  --pill-success-text: #10b981; 
+  --pill-info-bg: rgba(59, 130, 246, 0.15);
+  --pill-info-text: #60a5fa;
+  --pill-purple-bg: rgba(168, 85, 247, 0.15);
+  --pill-purple-text: #c084fc;
+  --pill-orange-bg: rgba(249, 115, 22, 0.15);
+  --pill-orange-text: #fb923c;
+
+  --shadow-sm: rgba(0, 0, 0, 0.4);
+  --shadow-lg: rgba(0, 0, 0, 0.6);
 }
 
 body {
@@ -11,6 +63,11 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #root {

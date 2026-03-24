@@ -18,13 +18,17 @@ import {
     Instagram,
     Twitter,
     Linkedin,
-    Facebook
+    Facebook,
+    Sun,
+    Moon
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 import '../styles/landingPage.css';
 import heroImg from '../assets/hero.png';
 
 const LandingPage = () => {
     const [scrolled, setScrolled] = useState(false);
+    const { isDarkMode, toggleTheme } = useTheme();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -52,6 +56,14 @@ const LandingPage = () => {
                 </div>
 
                 <div className="nav-auth">
+                    {/* Theme Toggle Button for Landing Page */}
+                    <button 
+                        onClick={toggleTheme} 
+                        className="theme-toggle-btn"
+                        title="Toggle Dark Mode"
+                    >
+                        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                    </button>
                     <Link to="/login" className="btn btn-outline">Login</Link>
                     <Link to="/register" className="btn btn-primary">Join Now</Link>
                 </div>
