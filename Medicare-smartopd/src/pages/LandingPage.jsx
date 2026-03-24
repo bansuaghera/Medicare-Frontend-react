@@ -197,22 +197,10 @@ const LandingPage = () => {
                     </div>
 
                     <div className="f-links">
-                        <h5>Platform</h5>
-                        <ul>
-                            <li><a href="#">Pricing Models</a></li>
-                            <li><a href="#">Global Reach</a></li>
-                            <li><a href="#">Security Audit</a></li>
-                            <li><a href="#">Case Studies</a></li>
-                        </ul>
-                    </div>
-
-                    <div className="f-links">
                         <h5>Company</h5>
                         <ul>
                             <li><Link to="/about">About Us</Link></li>
                             <li><Link to="/contact">Contact</Link></li>
-                            <li><a href="#">Our Vision</a></li>
-                            <li><a href="#">Partnerships</a></li>
                         </ul>
                     </div>
 

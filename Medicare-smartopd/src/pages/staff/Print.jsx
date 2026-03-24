@@ -4,11 +4,11 @@ import { Printer, FileText, Search, Calendar, ChevronRight } from "lucide-react"
 
 export default function Print() {
     const printItems = [
-        { id: "A-045", type: "Token", patient: "John Smith", date: "Today, 09:00 AM" },
-        { id: "RCP-1042", type: "Receipt", patient: "Sarah Johnson", date: "Today, 08:45 AM" },
-        { id: "PRS-8942", type: "Prescription", patient: "Michael Chen", date: "Yesterday, 04:30 PM" },
-        { id: "A-022", type: "Token", patient: "Emily Davis", date: "Yesterday, 10:15 AM" },
-        { id: "REP-4591", type: "Lab Report", patient: "Robert Wilson", date: "Feb 10, 02:20 PM" },
+        { id: "A-045", type: "Token", patient: "Rahul Verma", date: "Today, 09:00 AM" },
+        { id: "RCP-1042", type: "Receipt", patient: "Priya Sharma", date: "Today, 08:45 AM" },
+        { id: "PRS-8942", type: "Prescription", patient: "Suresh Kumar", date: "Yesterday, 04:30 PM" },
+        { id: "A-022", type: "Token", patient: "Sneha Desai", date: "Yesterday, 10:15 AM" },
+        { id: "REP-4591", type: "Lab Report", patient: "Vikram Singh", date: "Feb 10, 02:20 PM" },
     ];
 
     return (

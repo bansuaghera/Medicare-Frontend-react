@@ -86,7 +86,7 @@ export default function UserDashboard() {
                                         <UserCircle2 size={24} />
                                     </div>
                                     <div>
-                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Sarah Johnson</h4>
+                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Ramesh Sharma</h4>
                                         <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Cardiology</p>
                                     </div>
                                 </div>
@@ -102,7 +102,7 @@ export default function UserDashboard() {
                                         <UserCircle2 size={24} />
                                     </div>
                                     <div>
-                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Michael Chen</h4>
+                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Anjali Gupta</h4>
                                         <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Pediatrics</p>
                                     </div>
                                 </div>

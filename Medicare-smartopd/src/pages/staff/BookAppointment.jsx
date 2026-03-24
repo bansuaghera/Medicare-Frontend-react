@@ -25,8 +25,8 @@ export default function BookAppointment() {
                         <label style={{ fontSize: '14px', fontWeight: '500', color: '#333' }}>Patient *</label>
                         <select style={{ padding: '12px', borderRadius: '8px', border: '1px solid #ddd', outline: 'none', backgroundColor: '#fff' }}>
                             <option>Select patient</option>
-                            <option>John Smith</option>
-                            <option>Sarah Johnson</option>
+                            <option>Rahul Verma</option>
+                            <option>Priya Sharma</option>
                         </select>
                     </div>
 
@@ -34,8 +34,8 @@ export default function BookAppointment() {
                         <label style={{ fontSize: '14px', fontWeight: '500', color: '#333' }}>Doctor *</label>
                         <select style={{ padding: '12px', borderRadius: '8px', border: '1px solid #ddd', outline: 'none', backgroundColor: '#fff' }}>
                             <option>Select doctor</option>
-                            <option>Dr. Sarah Johnson</option>
-                            <option>Dr. Michael Chen</option>
+                            <option>Dr. Ramesh Sharma</option>
+                            <option>Dr. Anjali Gupta</option>
                         </select>
                     </div>
 

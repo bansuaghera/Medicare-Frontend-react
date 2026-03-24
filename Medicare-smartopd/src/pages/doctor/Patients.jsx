@@ -18,7 +18,7 @@ export default function Patients() {
                         <User size={48} />
                     </div>
                     <div>
-                        <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#222", marginBottom: "8px" }}>John Smith</h2>
+                        <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#222", marginBottom: "8px" }}>Rahul Verma</h2>
                         <p style={{ fontSize: "15px", color: "#666", marginBottom: "16px" }}>45 years • Male • O+</p>
 
                         <div>

@@ -68,7 +68,7 @@ export default function AddDoctor() {
 
                             <div className="form-group">
                                 <label>Phone Number *</label>
-                                <input type="tel" placeholder="+1 234-567-8900" required />
+                                <input type="tel" placeholder="+91 98765-43210" required />
                             </div>
 
                             <div className="form-group">

@@ -6,9 +6,9 @@ export default function Prescriptions() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const prescriptions = [
-        { id: "1", patient: "John Smith", date: "2024-02-12", diagnosis: "Hypertension", medicines: 3 },
-        { id: "2", patient: "Sarah Johnson", date: "2024-02-11", diagnosis: "Fever", medicines: 2 },
-        { id: "3", patient: "Michael Chen", date: "2024-02-10", diagnosis: "Diabetes Check", medicines: 4 },
+        { id: "1", patient: "Rahul Verma", date: "2024-02-12", diagnosis: "Hypertension", medicines: 3 },
+        { id: "2", patient: "Priya Sharma", date: "2024-02-11", diagnosis: "Fever", medicines: 2 },
+        { id: "3", patient: "Suresh Kumar", date: "2024-02-10", diagnosis: "Diabetes Check", medicines: 4 },
     ];
 
     return (

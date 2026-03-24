@@ -11,10 +11,10 @@ import "../../styles/patients.css";
 
 export default function Prescriptions() {
     const [prescriptions, setPrescriptions] = useState([
-        { id: 1, patient: "John Smith", doctor: "Dr. Sarah Johnson", date: "2024-02-12", medicines: 3, status: "Active" },
-        { id: 2, patient: "Sarah Johnson", doctor: "Dr. Michael Chen", date: "2024-02-11", medicines: 2, status: "Completed" },
-        { id: 3, patient: "Michael Chen", doctor: "Dr. Emily Davis", date: "2024-02-10", medicines: 4, status: "Active" },
-        { id: 4, patient: "Emily Davis", doctor: "Dr. Robert Wilson", date: "2024-02-09", medicines: 5, status: "Completed" },
+        { id: 1, patient: "Rahul Verma", doctor: "Dr. Ramesh Sharma", date: "2024-02-12", medicines: 3, status: "Active" },
+        { id: 2, patient: "Priya Sharma", doctor: "Dr. Anjali Gupta", date: "2024-02-11", medicines: 2, status: "Completed" },
+        { id: 3, patient: "Suresh Kumar", doctor: "Dr. Amit Patel", date: "2024-02-10", medicines: 4, status: "Active" },
+        { id: 4, patient: "Sneha Desai", doctor: "Dr. Vikram Singh", date: "2024-02-09", medicines: 5, status: "Completed" },
     ]);
 
     const toggleStatus = (id) => {

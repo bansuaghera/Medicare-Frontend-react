@@ -33,8 +33,8 @@ export default function BookAppointment() {
                             <div style={{ position: 'relative' }}>
                                 <select style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '15px', color: '#111827', appearance: 'none', background: '#fff' }}>
                                     <option value="">Choose a doctor</option>
-                                    <option value="sarah_johnson">Dr. Sarah Johnson - Cardiology</option>
-                                    <option value="michael_chen">Dr. Michael Chen - Pediatrics</option>
+                                    <option value="ramesh_sharma">Dr. Ramesh Sharma - Cardiology</option>
+                                    <option value="anjali_gupta">Dr. Anjali Gupta - Pediatrics</option>
                                 </select>
                                 <ChevronDown size={20} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280', pointerEvents: 'none' }} />
                             </div>

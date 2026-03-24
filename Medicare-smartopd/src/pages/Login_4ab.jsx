@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Mail,
@@ -7,7 +7,6 @@ import {
   ChevronRight
 } from "lucide-react";
 import API from "../api/axiosConfig";
-import logo from "../assets/logo.png";
 import "../styles/login.css";
 
 export default function Login() {
@@ -18,16 +17,31 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const roleRoutes = {
-      "admin@medicare": "/admin/dashboard",
-      "doctor@medicare": "/doctor/dashboard",
-      "staff@medicare": "/staff/dashboard",
-      "user@medicare": "/user/dashboard"
-    };
+    // Admin Check
+    if (email === "medicare@admin" && password === "123") {
+      alert("Admin Login Successful!");
+      navigate("/admin/dashboard");
+      return;
+    }
 
-    if (roleRoutes[email] && password === "123") {
-      alert(`Login Successful as ${email.split('@')[0].toUpperCase()}!`);
-      navigate(roleRoutes[email]);
+    // Staff Check
+    if (email === "staff@medicare" && password === "123") {
+      alert("Staff Login Successful!");
+      navigate("/staff/dashboard");
+      return;
+    }
+
+    // Doctor Check
+    if (email === "doctor@medicare" && password === "123") {
+      alert("Doctor Login Successful!");
+      navigate("/doctor/dashboard");
+      return;
+    }
+
+    // User Check
+    if (email === "user@medicare" && password === "123") {
+      alert("User Login Successful!");
+      navigate("/user/dashboard");
       return;
     }
 
@@ -75,14 +89,18 @@ export default function Login() {
 
         {/* Subtle decorative circles */}
         <div className="decoration-circle circle-1"></div>
-        <div className="decoration-circle circle-2" style={{ bottom: '-10%', right: '-10%' }}></div>
+        <div className="decoration-circle circle-2"></div>
       </div>
 
       {/* RIGHT SIDE */}
       <div className="right-section">
 
+        <div className="top-logo">
+          <h2 style={{ color: '#0fb48c', fontWeight: 800 }}>MediCare+</h2>
+        </div>
+
         <div className="login-card">
-          <h2>Welcome Back 👋</h2>
+          <h2>Welcome Back ≡ƒæï</h2>
           <p className="subtitle">Please login to your account</p>
 
           <form onSubmit={handleLogin} className="login-form">
@@ -127,30 +145,16 @@ export default function Login() {
               Login
             </button>
 
-            <button type="button" className="google-login-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.67 15.63 16.89 16.81 15.73 17.58V20.34H19.3C21.39 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4" />
-                <path d="M12 23C14.97 23 17.46 22.02 19.3 20.34L15.73 17.58C14.73 18.25 13.48 18.66 12 18.66C9.13 18.66 6.7 16.73 5.82 14.15H2.12V17.02C3.96 20.67 7.69 23 12 23Z" fill="#34A853" />
-                <path d="M5.82 14.15C5.6 13.47 5.47 12.75 5.47 12C5.47 11.25 5.6 10.53 5.82 9.85V6.98H2.12C1.36 8.5 0.93 10.2 0.93 12C0.93 13.8 1.36 15.5 2.12 17.02L5.82 14.15Z" fill="#FBBC05" />
-                <path d="M12 5.34C13.62 5.34 15.06 5.89 16.2 6.98L19.37 3.8C17.45 2.01 14.97 1 12 1C7.69 1 3.96 3.33 2.12 6.98L5.82 9.85C6.7 7.27 9.13 5.34 12 5.34Z" fill="#EA4335" />
-              </svg>
-              Login with Google
-            </button>
-
-            <div className="signup-link">
-              Don't have an account? <Link to="/register">Sign up</Link>
-            </div>
           </form>
+
+          <div className="signup-link">
+            Don't have an account? <Link to="/register">Sign up</Link>
+          </div>
 
         </div>
 
         <div className="support-footer">
-          Need help?<br />
-          <a href="mailto:support@medicare.com">support@medicare.com</a>
-        </div>
-
-        <div className="help-fab">
-          ?
+          Need help? <a href="mailto:support@medicare.com">support@medicare.com</a>
         </div>
 
       </div>

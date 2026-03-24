@@ -4,10 +4,10 @@ import { useState } from "react";
 
 export default function History() {
     const historyData = [
-        { title: "Routine Checkup", doctor: "Dr. Sarah Johnson", date: "2024-02-10", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" },
-        { title: "Fever", doctor: "Dr. Michael Chen", date: "2024-01-25", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" },
-        { title: "Blood Pressure Check", doctor: "Dr. Emily Davis", date: "2023-12-10", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" },
-        { title: "General Consultation", doctor: "Dr. Robert Wilson", date: "2023-11-15", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" }
+        { title: "Routine Checkup", doctor: "Dr. Ramesh Sharma", date: "2024-02-10", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" },
+        { title: "Fever", doctor: "Dr. Anjali Gupta", date: "2024-01-25", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" },
+        { title: "Blood Pressure Check", doctor: "Dr. Amit Patel", date: "2023-12-10", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" },
+        { title: "General Consultation", doctor: "Dr. Vikram Singh", date: "2023-11-15", status: "Completed", iconColor: "#a855f7", iconBg: "#f3e8ff" }
     ];
 
     const [searchTerm, setSearchTerm] = useState("");

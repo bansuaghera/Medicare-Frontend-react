@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function Doctors() {
     const doctors = [
         {
-            name: "Dr. Sarah Johnson",
+            name: "Dr. Ramesh Sharma",
             specialty: "Cardiology",
             rating: "4.8",
             experience: "15 years exp.",
@@ -16,7 +16,7 @@ export default function Doctors() {
             color: "#a855f7"
         },
         {
-            name: "Dr. Michael Chen",
+            name: "Dr. Anjali Gupta",
             specialty: "Pediatrics",
             rating: "4.7",
             experience: "12 years exp.",
@@ -26,7 +26,7 @@ export default function Doctors() {
             color: "#a855f7"
         },
         {
-            name: "Dr. Emily Davis",
+            name: "Dr. Amit Patel",
             specialty: "Dermatology",
             rating: "4.9",
             experience: "10 years exp.",
@@ -36,7 +36,7 @@ export default function Doctors() {
             color: "#a855f7"
         },
         {
-            name: "Dr. Robert Wilson",
+            name: "Dr. Vikram Singh",
             specialty: "Orthopedics",
             rating: "4.6",
             experience: "18 years exp.",

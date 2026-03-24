@@ -30,7 +30,7 @@ export default function Profile() {
                         <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#e8fdf5', color: '#0fb48c', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', fontSize: '48px', fontWeight: '700' }}>
                             SJ
                         </div>
-                        <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#222', marginBottom: '4px' }}>Dr. Sarah Johnson</h2>
+                        <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#222', marginBottom: '4px' }}>Dr. Ramesh Sharma</h2>
                         <p style={{ color: '#0fb48c', fontWeight: '500', marginBottom: '16px' }}>Senior Cardiologist</p>
 
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
@@ -42,10 +42,10 @@ export default function Profile() {
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', textAlign: 'left' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#555', fontSize: '14px' }}>
-                                <Mail size={18} color="#999" /> sarah.johnson@medicare.com
+                                <Mail size={18} color="#999" /> ramesh.sharma@medicare.com
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#555', fontSize: '14px' }}>
-                                <Phone size={18} color="#999" /> +1 (555) 123-4567
+                                <Phone size={18} color="#999" /> +91 98765 43210
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#555', fontSize: '14px' }}>
                                 <MapPin size={18} color="#999" /> Room 101, Main Wing
@@ -66,11 +66,11 @@ export default function Profile() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <label style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>First Name</label>
-                                <input type="text" value="Sarah" disabled={!isEditing} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #eee', background: isEditing ? '#fff' : '#fcfcfc', color: '#333', fontSize: '15px', outline: 'none' }} />
+                                <input type="text" value="Ramesh" disabled={!isEditing} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #eee', background: isEditing ? '#fff' : '#fcfcfc', color: '#333', fontSize: '15px', outline: 'none' }} />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <label style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>Last Name</label>
-                                <input type="text" value="Johnson" disabled={!isEditing} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #eee', background: isEditing ? '#fff' : '#fcfcfc', color: '#333', fontSize: '15px', outline: 'none' }} />
+                                <input type="text" value="Sharma" disabled={!isEditing} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #eee', background: isEditing ? '#fff' : '#fcfcfc', color: '#333', fontSize: '15px', outline: 'none' }} />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <label style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>Date of Birth</label>
@@ -88,7 +88,7 @@ export default function Profile() {
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '24px' }}>
                             <label style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>Bio</label>
-                            <textarea disabled={!isEditing} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #eee', background: isEditing ? '#fff' : '#fcfcfc', color: '#333', fontSize: '15px', outline: 'none', height: '100px', resize: 'none' }} value="Dr. Sarah Johnson is a board-certified cardiologist with over 15 years of experience in diagnosing and treating cardiovascular diseases. She specializes in preventive cardiology and heart failure management."></textarea>
+                            <textarea disabled={!isEditing} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #eee', background: isEditing ? '#fff' : '#fcfcfc', color: '#333', fontSize: '15px', outline: 'none', height: '100px', resize: 'none' }} value="Dr. Ramesh Sharma is a board-certified cardiologist with over 15 years of experience in diagnosing and treating cardiovascular diseases. She specializes in preventive cardiology and heart failure management."></textarea>
                         </div>
                     </div>
 

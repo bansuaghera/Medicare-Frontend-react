@@ -9,10 +9,10 @@ import "../../styles/adminDashboard.css";
 
 export default function TokenQueue() {
     const queueData = [
-        { token: "A-045", name: "John Smith", doctor: "Dr. Sarah Johnson", wait: "5 min", status: "In Progress" },
-        { token: "A-046", name: "Sarah Johnson", doctor: "Dr. Michael Chen", wait: "15 min", status: "Waiting" },
-        { token: "A-047", name: "Michael Chen", doctor: "Dr. Emily Davis", wait: "22 min", status: "Waiting" },
-        { token: "A-048", name: "Emily Davis", doctor: "Dr. Robert Wilson", wait: "30 min", status: "Waiting" },
+        { token: "A-045", name: "Rahul Verma", doctor: "Dr. Ramesh Sharma", wait: "5 min", status: "In Progress" },
+        { token: "A-046", name: "Priya Sharma", doctor: "Dr. Anjali Gupta", wait: "15 min", status: "Waiting" },
+        { token: "A-047", name: "Suresh Kumar", doctor: "Dr. Amit Patel", wait: "22 min", status: "Waiting" },
+        { token: "A-048", name: "Sneha Desai", doctor: "Dr. Vikram Singh", wait: "30 min", status: "Waiting" },
     ];
 
     return (

@@ -50,8 +50,8 @@ export default function AddOPDSchedule() {
                             <label>Select Doctor *</label>
                             <select required>
                                 <option value="">Choose a doctor</option>
-                                <option value="1">Dr. Sarah Johnson</option>
-                                <option value="2">Dr. Michael Chen</option>
+                                <option value="1">Dr. Ramesh Sharma</option>
+                                <option value="2">Dr. Anjali Gupta</option>
                             </select>
                         </div>
 

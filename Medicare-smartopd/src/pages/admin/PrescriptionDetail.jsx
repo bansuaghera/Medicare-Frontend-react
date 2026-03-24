@@ -44,8 +44,8 @@ export default function PrescriptionDetail() {
                     <div className="pres-header">
                         <div className="clinic-info">
                             <h2>MediCare Smart OPD</h2>
-                            <p>123 Medical Center, Healthcare City</p>
-                            <p>Phone: +1 234-567-8900</p>
+                            <p>123 Swasthya Kendra, New Delhi</p>
+                            <p>Phone: +91 98765-43210</p>
                         </div>
                         <div className="pres-date">
                             <label>Date</label>
@@ -56,12 +56,12 @@ export default function PrescriptionDetail() {
                     <div className="info-grid">
                         <div className="info-block">
                             <label>Patient</label>
-                            <h4>John Smith</h4>
+                            <h4>Rahul Verma</h4>
                             <span>ID: 12345</span>
                         </div>
                         <div className="info-block">
                             <label>Doctor</label>
-                            <h4>Dr. Sarah Johnson</h4>
+                            <h4>Dr. Ramesh Sharma</h4>
                         </div>
                     </div>
 

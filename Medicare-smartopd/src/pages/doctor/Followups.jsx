@@ -6,8 +6,8 @@ export default function Followups() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const followups = [
-        { id: "1", patient: "Michael Chen", originalVisit: "2024-02-10", reason: "Diabetes Management Check", status: "Due Today" },
-        { id: "2", patient: "Lisa Anderson", originalVisit: "2024-02-05", reason: "Post-surgery observation", status: "Upcoming" },
+        { id: "1", patient: "Suresh Kumar", originalVisit: "2024-02-10", reason: "Diabetes Management Check", status: "Due Today" },
+        { id: "2", patient: "Neha Reddy", originalVisit: "2024-02-05", reason: "Post-surgery observation", status: "Upcoming" },
     ];
 
     return (

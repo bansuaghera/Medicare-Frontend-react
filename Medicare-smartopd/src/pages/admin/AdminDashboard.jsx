@@ -179,9 +179,9 @@ export default function AdminDashboard() {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             {[
-                                { name: 'Sarah Jenkins', time: '10:30 AM', doc: 'Dr. Smith', type: 'Checkup' },
-                                { name: 'Michael Ross', time: '11:15 AM', doc: 'Dr. Ross', type: 'Follow-up' },
-                                { name: 'Emily Blunt', time: '12:00 PM', doc: 'Dr. Smith', type: 'Consultation' }
+                                { name: 'Priya Sharma', time: '10:30 AM', doc: 'Dr. Ramesh', type: 'Checkup' },
+                                { name: 'Rahul Verma', time: '11:15 AM', doc: 'Dr. Kapoor', type: 'Follow-up' },
+                                { name: 'Sneha Desai', time: '12:00 PM', doc: 'Dr. Ramesh', type: 'Consultation' }
                             ].map((item, i) => (
                                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                     <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center', fontWeight: 700, color: '#64748b' }}>
