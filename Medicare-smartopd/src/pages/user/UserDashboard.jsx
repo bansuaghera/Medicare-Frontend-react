@@ -86,8 +86,8 @@ export default function UserDashboard() {
                                         <UserCircle2 size={24} />
                                     </div>
                                     <div>
-                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>Dr. Sarah Johnson</h4>
-                                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0 }}>Cardiology</p>
+                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Ramesh Sharma</h4>
+                                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Cardiology</p>
                                     </div>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
@@ -102,8 +102,8 @@ export default function UserDashboard() {
                                         <UserCircle2 size={24} />
                                     </div>
                                     <div>
-                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>Dr. Michael Chen</h4>
-                                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0 }}>Pediatrics</p>
+                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Anjali Gupta</h4>
+                                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Pediatrics</p>
                                     </div>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>

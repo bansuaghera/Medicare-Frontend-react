@@ -4,9 +4,9 @@ import { Mic } from "lucide-react";
 
 export default function CallToken() {
     const nextInQueue = [
-        { token: "A-046", patient: "Sarah Johnson", doctor: "Dr. Michael Chen" },
-        { token: "A-047", patient: "Michael Chen", doctor: "Dr. Emily Davis" },
-        { token: "A-048", patient: "Emily Davis", doctor: "Dr. Robert Wilson" },
+        { token: "A-046", patient: "Priya Sharma", doctor: "Dr. Anjali Gupta" },
+        { token: "A-047", patient: "Suresh Kumar", doctor: "Dr. Amit Patel" },
+        { token: "A-048", patient: "Sneha Desai", doctor: "Dr. Vikram Singh" },
     ];
 
     return (
@@ -27,8 +27,8 @@ export default function CallToken() {
                     </div>
 
                     <div style={{ marginBottom: '32px' }}>
-                        <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>John Smith</h3>
-                        <p style={{ fontSize: '14px', color: '#888' }}>Dr. Sarah Johnson - Room 101</p>
+                        <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Rahul Verma</h3>
+                        <p style={{ fontSize: '14px', color: '#888' }}>Dr. Ramesh Sharma - Room 101</p>
                     </div>
 
                     <button style={{ width: '100%', background: '#0fb48c', color: '#fff', border: 'none', padding: '16px', borderRadius: '8px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '16px' }}>

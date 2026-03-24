@@ -17,11 +17,11 @@ import "../../styles/patients.css";
 export default function UserProfile() {
     // Mock data for a versatile profile view
     const user = {
-        name: "John Smith",
+        name: "Rahul Verma",
         role: "Patient",
-        email: "john.smith@example.com",
-        phone: "+1 234 567 8900",
-        address: "123 Medical Center, Healthcare City",
+        email: "rahul.v@example.com",
+        phone: "+91 98765 00001",
+        address: "123 Swasthya Kendra, New Delhi",
         dob: "1990-05-15",
         joinDate: "2023-10-12",
         id: "MED-90210",

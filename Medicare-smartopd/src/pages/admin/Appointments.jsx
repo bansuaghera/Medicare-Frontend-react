@@ -11,11 +11,11 @@ import "../../styles/patients.css";
 
 export default function Appointments() {
     const [appointments, setAppointments] = useState([
-        { id: 1, patient: "John Smith", doctor: "Dr. Sarah Johnson", date: "2024-02-12", time: "10:00 AM", type: "Checkup", status: "Confirmed" },
-        { id: 2, patient: "Sarah Johnson", doctor: "Dr. Michael Chen", date: "2024-02-12", time: "11:00 AM", type: "Consultation", status: "Pending" },
-        { id: 3, patient: "Michael Chen", doctor: "Dr. Emily Davis", date: "2024-02-12", time: "02:00 PM", type: "Follow-up", status: "Confirmed" },
-        { id: 4, patient: "Emily Davis", doctor: "Dr. Robert Wilson", date: "2024-02-13", time: "09:00 AM", type: "Emergency", status: "Cancelled" },
-        { id: 5, patient: "Robert Wilson", doctor: "Dr. Sarah Johnson", date: "2024-02-13", time: "03:00 PM", type: "Checkup", status: "Confirmed" },
+        { id: 1, patient: "Rahul Verma", doctor: "Dr. Ramesh Sharma", date: "2024-02-12", time: "10:00 AM", type: "Checkup", status: "Confirmed" },
+        { id: 2, patient: "Priya Sharma", doctor: "Dr. Anjali Gupta", date: "2024-02-12", time: "11:00 AM", type: "Consultation", status: "Pending" },
+        { id: 3, patient: "Suresh Kumar", doctor: "Dr. Amit Patel", date: "2024-02-12", time: "02:00 PM", type: "Follow-up", status: "Confirmed" },
+        { id: 4, patient: "Sneha Desai", doctor: "Dr. Vikram Singh", date: "2024-02-13", time: "09:00 AM", type: "Emergency", status: "Cancelled" },
+        { id: 5, patient: "Vikram Singh", doctor: "Dr. Ramesh Sharma", date: "2024-02-13", time: "03:00 PM", type: "Checkup", status: "Confirmed" },
     ]);
 
     const toggleStatus = (id) => {

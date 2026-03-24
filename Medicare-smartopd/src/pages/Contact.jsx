@@ -75,14 +75,14 @@ const Contact = () => {
                         <div className="info-content">
                             <h4>Direct Hotline</h4>
                             <p>Immediate assistance for hospitals and clinics.</p>
-                            <a href="tel:+1234567890" style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>+1 (234) 567-890</a>
+                            <a href="tel:+919876543210" style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>+91 98765 43210</a>
                         </div>
                     </div>
                     <div className="info-item">
                         <div className="info-icon"><MapPin /></div>
                         <div className="info-content">
                             <h4>Clinical HQ</h4>
-                            <p>Healthcare Innovation Hub, 12th Floor, Metro Plaza, Silicon Valley.</p>
+                            <p>Healthcare Innovation Hub, 12th Floor, Metro Plaza, Bengaluru.</p>
                         </div>
                     </div>
                 </div>
@@ -91,11 +91,11 @@ const Contact = () => {
                     <form className="form-grid">
                         <div className="form-group">
                             <label>Full Name</label>
-                            <input type="text" placeholder="John Doe" />
+                            <input type="text" placeholder="Rahul Verma" />
                         </div>
                         <div className="form-group">
                             <label>Professional Email</label>
-                            <input type="email" placeholder="john@clinic.com" />
+                            <input type="email" placeholder="rahul@clinic.com" />
                         </div>
                         <div className="form-group">
                             <label>Clinic/Hospital Name</label>

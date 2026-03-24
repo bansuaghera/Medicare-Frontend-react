@@ -13,10 +13,10 @@ import "../../styles/patients.css";
 
 export default function Doctors() {
     const [doctors, setDoctors] = useState([
-        { id: 1, name: "Dr. Sarah Johnson", specialty: "Cardiology", phone: "+1 234-567-8900", email: "sarah.j@hospital.com", patients: 145, status: "Active" },
-        { id: 2, name: "Dr. Michael Chen", specialty: "Pediatrics", phone: "+1 234-567-8901", email: "michael.c@hospital.com", patients: 132, status: "Active" },
-        { id: 3, name: "Dr. Emily Davis", specialty: "Dermatology", phone: "+1 234-567-8902", email: "emly.d@hospital.com", patients: 98, status: "On Leave" },
-        { id: 4, name: "Dr. Robert Wilson", specialty: "Orthopedics", phone: "+1 234-567-8903", email: "robert.w@hospital.com", patients: 156, status: "Active" },
+        { id: 1, name: "Dr. Ramesh Sharma", specialty: "Cardiology", phone: "+91 98765-43210", email: "ramesh.s@hospital.com", patients: 145, status: "Active" },
+        { id: 2, name: "Dr. Anjali Gupta", specialty: "Pediatrics", phone: "+91 98765-43211", email: "anjali.g@hospital.com", patients: 132, status: "Active" },
+        { id: 3, name: "Dr. Amit Patel", specialty: "Dermatology", phone: "+91 98765-43212", email: "amit.p@hospital.com", patients: 98, status: "On Leave" },
+        { id: 4, name: "Dr. Vikram Singh", specialty: "Orthopedics", phone: "+91 98765-43213", email: "vikram.s@hospital.com", patients: 156, status: "Active" },
     ]);
 
     const toggleStatus = (id) => {

@@ -6,10 +6,10 @@ export default function Appointments() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const appointments = [
-        { time: "09:00 AM", patient: "John Smith", type: "Checkup", token: "A-045", status: "In Progress" },
-        { time: "09:30 AM", patient: "Sarah Johnson", type: "Consultation", token: "A-046", status: "Waiting" },
-        { time: "10:00 AM", patient: "Michael Chen", type: "Follow-up", token: "A-047", status: "Waiting" },
-        { time: "10:30 AM", patient: "Emily Davis", type: "Checkup", token: "A-048", status: "Waiting" },
+        { time: "09:00 AM", patient: "Rahul Verma", type: "Checkup", token: "A-045", status: "In Progress" },
+        { time: "09:30 AM", patient: "Priya Sharma", type: "Consultation", token: "A-046", status: "Waiting" },
+        { time: "10:00 AM", patient: "Suresh Kumar", type: "Follow-up", token: "A-047", status: "Waiting" },
+        { time: "10:30 AM", patient: "Sneha Desai", type: "Checkup", token: "A-048", status: "Waiting" },
     ];
 
     return (

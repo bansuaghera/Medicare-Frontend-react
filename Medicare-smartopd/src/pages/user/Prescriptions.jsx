@@ -4,9 +4,9 @@ import { useState } from "react";
 
 export default function Prescriptions() {
     const prescriptions = [
-        { date: "2024-02-12", doctor: "Dr. Sarah Johnson", diagnosis: "Hypertension", medicines: "3" },
-        { date: "2024-02-11", doctor: "Dr. Michael Chen", diagnosis: "Fever", medicines: "2" },
-        { date: "2024-02-10", doctor: "Dr. Emily Davis", diagnosis: "Diabetes Check", medicines: "4" }
+        { date: "2024-02-12", doctor: "Dr. Ramesh Sharma", diagnosis: "Hypertension", medicines: "3" },
+        { date: "2024-02-11", doctor: "Dr. Anjali Gupta", diagnosis: "Fever", medicines: "2" },
+        { date: "2024-02-10", doctor: "Dr. Amit Patel", diagnosis: "Diabetes Check", medicines: "4" }
     ];
 
     const [searchTerm, setSearchTerm] = useState("");

@@ -12,10 +12,10 @@ import "../../styles/patients.css";
 
 export default function Staff() {
     const [staffList, setStaffList] = useState([
-        { id: 1, name: "Jennifer Lee", role: "Receptionist", shift: "Morning", phone: "+1 234-567-8900", email: "jennifer.l@hospital.com", status: "Active" },
-        { id: 2, name: "David Brown", role: "Nurse", shift: "Night", phone: "+1 234-567-8901", email: "david.b@hospital.com", status: "Active" },
-        { id: 3, name: "Lisa Anderson", role: "Lab Technician", shift: "Morning", phone: "+1 234-567-8902", email: "lisa.a@hospital.com", status: "Active" },
-        { id: 4, name: "James Taylor", role: "Pharmacist", shift: "Evening", phone: "+1 234-567-8903", email: "james.t@hospital.com", status: "On Leave" },
+        { id: 1, name: "Kavita Joshi", role: "Receptionist", shift: "Morning", phone: "+91 98765-43210", email: "kavita.j@hospital.com", status: "Active" },
+        { id: 2, name: "Deepak Kumar", role: "Nurse", shift: "Night", phone: "+91 98765-43211", email: "deepak.k@hospital.com", status: "Active" },
+        { id: 3, name: "Neha Reddy", role: "Lab Technician", shift: "Morning", phone: "+91 98765-43212", email: "neha.r@hospital.com", status: "Active" },
+        { id: 4, name: "Sanjay Verma", role: "Pharmacist", shift: "Evening", phone: "+91 98765-43213", email: "sanjay.v@hospital.com", status: "On Leave" },
     ]);
 
     const toggleStatus = (id) => {

@@ -7,7 +7,7 @@ export default function MyAppointments() {
     const navigate = useNavigate();
     const appointments = [
         {
-            doctor: "Dr. Sarah Johnson",
+            doctor: "Dr. Ramesh Sharma",
             specialty: "Cardiology",
             date: "2024-02-15",
             time: "10:00 AM",
@@ -18,7 +18,7 @@ export default function MyAppointments() {
             actionable: true,
         },
         {
-            doctor: "Dr. Michael Chen",
+            doctor: "Dr. Anjali Gupta",
             specialty: "Pediatrics",
             date: "2024-02-20",
             time: "02:00 PM",
@@ -29,7 +29,7 @@ export default function MyAppointments() {
             actionable: true,
         },
         {
-            doctor: "Dr. Emily Davis",
+            doctor: "Dr. Amit Patel",
             specialty: "Dermatology",
             date: "2024-02-10",
             time: "09:00 AM",

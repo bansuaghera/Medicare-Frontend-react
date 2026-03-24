@@ -6,10 +6,10 @@ export default function OPDSchedule() {
     const [currentDate, setCurrentDate] = useState(new Date("2026-02-13"));
 
     const schedules = [
-        { doctor: "Dr. Sarah Johnson", time: "09:00 AM - 12:00 PM", room: "Room 101", slots: 12 },
-        { doctor: "Dr. Michael Chen", time: "10:00 AM - 01:00 PM", room: "Room 102", slots: 15 },
-        { doctor: "Dr. Emily Davis", time: "02:00 PM - 05:00 PM", room: "Room 103", slots: 10 },
-        { doctor: "Dr. James Wilson", time: "03:00 PM - 06:00 PM", room: "Room 104", slots: 8 },
+        { doctor: "Dr. Ramesh Sharma", time: "09:00 AM - 12:00 PM", room: "Room 101", slots: 12 },
+        { doctor: "Dr. Anjali Gupta", time: "10:00 AM - 01:00 PM", room: "Room 102", slots: 15 },
+        { doctor: "Dr. Amit Patel", time: "02:00 PM - 05:00 PM", room: "Room 103", slots: 10 },
+        { doctor: "Dr. Prakash Iyer", time: "03:00 PM - 06:00 PM", room: "Room 104", slots: 8 },
         { doctor: "Dr. Lisa Thompson", time: "11:00 AM - 02:00 PM", room: "Room 105", slots: 6 },
     ];
 

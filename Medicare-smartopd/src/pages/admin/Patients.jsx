@@ -12,11 +12,11 @@ import "../../styles/patients.css";
 
 export default function Patients() {
     const [patients, setPatients] = useState([
-        { id: 1, name: "John Smith", age: 45, gender: "Male", phone: "+1 234-567-8900", lastVisit: "2024-02-10", status: "Active" },
-        { id: 2, name: "Sarah Johnson", age: 32, gender: "Female", phone: "+1 234-567-8901", lastVisit: "2024-02-09", status: "Active" },
-        { id: 3, name: "Michael Chen", age: 58, gender: "Male", phone: "+1 234-567-8902", lastVisit: "2024-01-28", status: "Inactive" },
-        { id: 4, name: "Emily Davis", age: 28, gender: "Female", phone: "+1 234-567-8903", lastVisit: "2024-02-11", status: "Active" },
-        { id: 5, name: "Robert Wilson", age: 41, gender: "Male", phone: "+1 234-567-8904", lastVisit: "2024-02-08", status: "Active" },
+        { id: 1, name: "Rahul Verma", age: 45, gender: "Male", phone: "+91 98765-00001", lastVisit: "2024-02-10", status: "Active" },
+        { id: 2, name: "Priya Sharma", age: 32, gender: "Female", phone: "+91 98765-00002", lastVisit: "2024-02-09", status: "Active" },
+        { id: 3, name: "Suresh Kumar", age: 58, gender: "Male", phone: "+91 98765-00003", lastVisit: "2024-01-28", status: "Inactive" },
+        { id: 4, name: "Sneha Desai", age: 28, gender: "Female", phone: "+91 98765-00004", lastVisit: "2024-02-11", status: "Active" },
+        { id: 5, name: "Vikram Singh", age: 41, gender: "Male", phone: "+91 98765-00005", lastVisit: "2024-02-08", status: "Active" },
     ]);
 
     const toggleStatus = (id) => {

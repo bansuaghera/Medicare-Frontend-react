@@ -61,7 +61,7 @@ export default function RegisterPatient() {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <label style={{ fontSize: '14px', fontWeight: '500', color: '#333' }}>Phone Number *</label>
-                        <input type="tel" placeholder="+1 234-567-8900" style={{ padding: '12px', borderRadius: '8px', border: '1px solid #ddd', outline: 'none' }} />
+                        <input type="tel" placeholder="+91 98765-43210" style={{ padding: '12px', borderRadius: '8px', border: '1px solid #ddd', outline: 'none' }} />
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

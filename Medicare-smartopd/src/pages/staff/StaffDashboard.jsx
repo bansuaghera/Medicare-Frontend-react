@@ -87,12 +87,12 @@ export default function StaffDashboard() {
 
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         {[
-                            { time: "09:00 AM", patient: "John Smith", doctor: "Dr. Sarah Johnson", token: "A-045" },
-                            { time: "09:30 AM", patient: "Sarah Johnson", doctor: "Dr. Michael Chen", token: "A-046" },
-                            { time: "10:00 AM", patient: "Michael Chen", doctor: "Dr. Emily Davis", token: "A-047" },
-                            { time: "10:30 AM", patient: "Emily Davis", doctor: "Dr. Robert Wilson", token: "A-048" },
-                            { time: "11:00 AM", patient: "Robert Wilson", doctor: "Dr. Lisa Anderson", token: "A-049" },
-                            { time: "11:30 AM", patient: "Lisa Anderson", doctor: "Dr. Mark Thompson", token: "A-050" }
+                            { time: "09:00 AM", patient: "Rahul Verma", doctor: "Dr. Ramesh Sharma", token: "A-045" },
+                            { time: "09:30 AM", patient: "Priya Sharma", doctor: "Dr. Anjali Gupta", token: "A-046" },
+                            { time: "10:00 AM", patient: "Suresh Kumar", doctor: "Dr. Amit Patel", token: "A-047" },
+                            { time: "10:30 AM", patient: "Sneha Desai", doctor: "Dr. Vikram Singh", token: "A-048" },
+                            { time: "11:00 AM", patient: "Vikram Singh", doctor: "Dr. Neha Reddy", token: "A-049" },
+                            { time: "11:30 AM", patient: "Neha Reddy", doctor: "Dr. Mark Thompson", token: "A-050" }
                         ].map((apt, index) => (
                             <div key={index} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", border: "1px solid #f0f0f0", borderRadius: "8px" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>

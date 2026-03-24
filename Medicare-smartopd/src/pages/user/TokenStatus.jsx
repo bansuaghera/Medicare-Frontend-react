@@ -23,7 +23,7 @@ export default function TokenStatus() {
                                 <User size={18} />
                                 <span style={{ fontSize: '14px' }}>Patient</span>
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>John Smith</span>
+                            <span style={{ fontSize: '14px', fontWeight: '600', color: '#111827' }}>Rahul Verma</span>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px' }}>
@@ -31,7 +31,7 @@ export default function TokenStatus() {
                                 <Stethoscope size={18} />
                                 <span style={{ fontSize: '14px' }}>Doctor</span>
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>Dr. Sarah Johnson</span>
+                            <span style={{ fontSize: '14px', fontWeight: '600', color: '#111827' }}>Dr. Ramesh Sharma</span>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px' }}>

@@ -3,10 +3,10 @@ import StaffLayout from "../../layouts/StaffLayout";
 
 export default function QueueMonitor() {
     const queueItems = [
-        { token: "A-045", patient: "John Smith", doctor: "Dr. Sarah Johnson", waitTime: "5 min", status: "In Progress" },
-        { token: "A-046", patient: "Sarah Johnson", doctor: "Dr. Michael Chen", waitTime: "15 min", status: "Waiting" },
-        { token: "A-047", patient: "Michael Chen", doctor: "Dr. Emily Davis", waitTime: "22 min", status: "Waiting" },
-        { token: "A-048", patient: "Emily Davis", doctor: "Dr. Robert Wilson", waitTime: "30 min", status: "Waiting" },
+        { token: "A-045", patient: "Rahul Verma", doctor: "Dr. Ramesh Sharma", waitTime: "5 min", status: "In Progress" },
+        { token: "A-046", patient: "Priya Sharma", doctor: "Dr. Anjali Gupta", waitTime: "15 min", status: "Waiting" },
+        { token: "A-047", patient: "Suresh Kumar", doctor: "Dr. Amit Patel", waitTime: "22 min", status: "Waiting" },
+        { token: "A-048", patient: "Sneha Desai", doctor: "Dr. Vikram Singh", waitTime: "30 min", status: "Waiting" },
     ];
 
     return (

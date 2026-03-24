@@ -11,10 +11,10 @@ import "../../styles/patients.css";
 
 export default function OPDSchedule() {
     const schedules = [
-        { id: 1, doctor: "Dr. Sarah Johnson", time: "09:00 AM - 12:00 PM", room: "Room 101", slots: 12 },
-        { id: 2, doctor: "Dr. Michael Chen", time: "10:00 AM - 01:00 PM", room: "Room 102", slots: 15 },
-        { id: 3, doctor: "Dr. Emily Davis", time: "02:00 PM - 05:00 PM", room: "Room 103", slots: 10 },
-        { id: 4, doctor: "Dr. Robert Wilson", time: "03:00 PM - 06:00 PM", room: "Room 104", slots: 12 },
+        { id: 1, doctor: "Dr. Ramesh Sharma", time: "09:00 AM - 12:00 PM", room: "Room 101", slots: 12 },
+        { id: 2, doctor: "Dr. Anjali Gupta", time: "10:00 AM - 01:00 PM", room: "Room 102", slots: 15 },
+        { id: 3, doctor: "Dr. Amit Patel", time: "02:00 PM - 05:00 PM", room: "Room 103", slots: 10 },
+        { id: 4, doctor: "Dr. Vikram Singh", time: "03:00 PM - 06:00 PM", room: "Room 104", slots: 12 },
     ];
 
     return (

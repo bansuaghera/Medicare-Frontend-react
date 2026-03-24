@@ -25,20 +25,20 @@ export default function Profile() {
                             <User size={40} />
                         </div>
                         <div>
-                            <h2 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>John Smith</h2>
-                            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', margin: 0 }}>Patient ID: 12345</p>
+                            <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#111827', margin: '0 0 4px 0' }}>Rahul Verma</h2>
+                            <p style={{ fontSize: '15px', color: '#6b7280', margin: 0 }}>Patient ID: 12345</p>
                         </div>
                     </div>
 
                     <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                             <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-tertiary)', marginBottom: '8px' }}>First Name</label>
-                                <input type="text" defaultValue="John" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)' }} />
+                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>First Name</label>
+                                <input type="text" defaultValue="Rahul" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '15px', color: '#111827' }} />
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Last Name</label>
-                                <input type="text" defaultValue="Smith" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)' }} />
+                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>Last Name</label>
+                                <input type="text" defaultValue="Verma" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '15px', color: '#111827' }} />
                             </div>
                         </div>
 
@@ -46,15 +46,15 @@ export default function Profile() {
                             <div>
                                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Email</label>
                                 <div style={{ position: 'relative' }}>
-                                    <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-                                    <input type="email" defaultValue="john.smith@example.com" style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)' }} />
+                                    <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+                                    <input type="email" defaultValue="rahul.v@example.com" style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '15px', color: '#111827' }} />
                                 </div>
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Phone</label>
                                 <div style={{ position: 'relative' }}>
-                                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', fontSize: '14px' }}>+1</span>
-                                    <input type="tel" defaultValue="234-567-8900" style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)' }} />
+                                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280', fontSize: '14px' }}>+91</span>
+                                    <input type="tel" defaultValue="98765-43210" style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '15px', color: '#111827' }} />
                                 </div>
                             </div>
                         </div>
