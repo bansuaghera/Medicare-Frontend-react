@@ -1,9 +1,17 @@
 import UserLayout from "../../layouts/UserLayout";
 import { Link } from "react-router-dom";
-import { Calendar, User, CheckCircle, Clock, Plus, Search, UserCircle2 } from "lucide-react";
+import { Calendar, User, CheckCircle, Clock } from "lucide-react";
 import "../../styles/adminDashboard.css";
 
+import UserQuickActions from "../../components/user/UserQuickActions";
+import UserUpcomingAppointments from "../../components/user/UserUpcomingAppointments";
+
 export default function UserDashboard() {
+    const appointments = [
+        { doctor: "Dr. Ramesh Sharma", specialty: "Cardiology", date: "2024-02-15", time: "10:00 AM", iconBg: "#f3e8ff", iconColor: "#a855f7" },
+        { doctor: "Dr. Anjali Gupta", specialty: "Pediatrics", date: "2024-02-20", time: "02:00 PM", iconBg: "#dbeafe", iconColor: "#3b82f6" }
+    ];
+
     return (
         <UserLayout panelTitle="User Panel">
             <div className="dashboard-page" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
@@ -56,64 +64,8 @@ export default function UserDashboard() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
-                    {/* Quick Actions */}
-                    <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb', padding: '24px' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '20px' }}>Quick Actions</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            <Link to="/user/book-appointment" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#10b981', color: '#fff', padding: '12px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' }}>
-                                <Plus size={20} />
-                                Book Appointment
-                            </Link>
-                            <Link to="/user/doctors" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#fff', color: '#374151', border: '1px solid #d1d5db', padding: '12px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' }}>
-                                <Search size={20} />
-                                Find Doctor
-                            </Link>
-                            <Link to="/user/token-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#fff', color: '#374151', border: '1px solid #d1d5db', padding: '12px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' }}>
-                                <Clock size={20} />
-                                Token Status
-                            </Link>
-                        </div>
-                    </div>
-
-                    {/* Upcoming Appointments */}
-                    <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e7eb', padding: '24px' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '20px' }}>Upcoming Appointments</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f9fafb', borderRadius: '12px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f3e8ff', color: '#a855f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <UserCircle2 size={24} />
-                                    </div>
-                                    <div>
-                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Ramesh Sharma</h4>
-                                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Cardiology</p>
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#111827', margin: 0 }}>2024-02-15</p>
-                                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>10:00 AM</p>
-                                </div>
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f9fafb', borderRadius: '12px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#dbeafe', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <UserCircle2 size={24} />
-                                    </div>
-                                    <div>
-                                        <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0 }}>Dr. Anjali Gupta</h4>
-                                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Pediatrics</p>
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '14px', fontWeight: '600', color: '#111827', margin: 0 }}>2024-02-20</p>
-                                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>02:00 PM</p>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                    <UserQuickActions />
+                    <UserUpcomingAppointments appointments={appointments} />
                 </div>
             </div>
         </UserLayout>

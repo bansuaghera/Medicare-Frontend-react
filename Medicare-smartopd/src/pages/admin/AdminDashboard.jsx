@@ -4,18 +4,19 @@ import {
     CalendarCheck,
     UserPlus,
     DollarSign,
-    TrendingUp,
-    Activity,
-    Clock,
     ArrowUpRight,
     Plus
 } from "lucide-react";
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    AreaChart, Area
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import { Link } from "react-router-dom";
 import "../../styles/adminDashboard.css";
+
+// Components
+import SystemActivity from "../../components/admin/SystemActivity";
+import AdminQuickStats from "../../components/admin/AdminQuickStats";
+import AdminUpcomingAppointments from "../../components/admin/AdminUpcomingAppointments";
 
 const weeklyData = [
     { name: 'Mon', count: 45 },
@@ -27,16 +28,19 @@ const weeklyData = [
     { name: 'Sun', count: 20 },
 ];
 
-const trendData = [
-    { name: '9AM', count: 12 },
-    { name: '11AM', count: 25 },
-    { name: '1PM', count: 18 },
-    { name: '3PM', count: 32 },
-    { name: '5PM', count: 24 },
-    { name: '7PM', count: 15 },
-];
-
 export default function AdminDashboard() {
+    const upcomingAppointments = [
+        { name: 'Priya Sharma', time: '10:30 AM', doc: 'Dr. Ramesh', type: 'Checkup' },
+        { name: 'Rahul Verma', time: '11:15 AM', doc: 'Dr. Kapoor', type: 'Follow-up' },
+        { name: 'Sneha Desai', time: '12:00 PM', doc: 'Dr. Ramesh', type: 'Consultation' }
+    ];
+
+    const systemActivities = [
+        { text: 'Prescription issued #9021', time: '5m ago', color: '#0fb48c' },
+        { text: 'New Doctor registered', time: '1h ago', color: '#3b82f6' },
+        { text: 'Emergency alert in Ward 4', time: '2h ago', color: '#ef4444' }
+    ];
+
     return (
         <AdminLayout panelTitle="Admin Panel">
             <div className="dashboard-page">
@@ -57,7 +61,6 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Stats Grid - High Visual Impact */}
                 <div className="stats-grid" style={{ gap: '24px', marginBottom: '32px' }}>
                     <div className="stat-card" style={{ padding: '24px' }}>
                         <div className="stat-info">
@@ -113,7 +116,6 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="charts-grid" style={{ gridTemplateColumns: '1.6fr 1fr', gap: '24px', marginBottom: '32px' }}>
-                    {/* Main Chart Card */}
                     <div className="chart-card" style={{ padding: '24px' }}>
                         <div className="chart-header" style={{ marginBottom: '24px' }}>
                             <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Patient Traffic Analysis</h3>
@@ -137,96 +139,12 @@ export default function AdminDashboard() {
                             </ResponsiveContainer>
                         </div>
                     </div>
-
-                    {/* Quick Actions / Status Card */}
-                    <div className="chart-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Quick Stats</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#0fb48c' }}></div>
-                                <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: '13px', color: '#64748b' }}>Consultation</p>
-                                    <p style={{ fontWeight: 700 }}>75% Capacity</p>
-                                </div>
-                            </div>
-                            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#3b82f6' }}></div>
-                                <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: '13px', color: '#64748b' }}>Lab Tests</p>
-                                    <p style={{ fontWeight: 700 }}>12 Pending</p>
-                                </div>
-                            </div>
-                            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#f97316' }}></div>
-                                <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: '13px', color: '#64748b' }}>Pharmacy</p>
-                                    <p style={{ fontWeight: 700 }}>Critical Stock (5)</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button className="add-btn" style={{ width: '100%', marginTop: 'auto', padding: '14px' }}>
-                            View Full Report
-                        </button>
-                    </div>
+                    <AdminQuickStats />
                 </div>
 
-                {/* Recent Activities Section */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                    <div className="chart-card" style={{ padding: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                            <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Upcoming Appointments</h3>
-                            <Link to="/admin/appointments" style={{ fontSize: '13px', color: '#0fb48c', textDecoration: 'none', fontWeight: 600 }}>See All</Link>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {[
-                                { name: 'Priya Sharma', time: '10:30 AM', doc: 'Dr. Ramesh', type: 'Checkup' },
-                                { name: 'Rahul Verma', time: '11:15 AM', doc: 'Dr. Kapoor', type: 'Follow-up' },
-                                { name: 'Sneha Desai', time: '12:00 PM', doc: 'Dr. Ramesh', type: 'Consultation' }
-                            ].map((item, i) => (
-                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center', fontWeight: 700, color: '#64748b' }}>
-                                        {item.name.split(' ').map(n => n[0]).join('')}
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <p style={{ fontWeight: 700, fontSize: '15px' }}>{item.name}</p>
-                                        <p style={{ fontSize: '13px', color: '#64748b' }}>{item.doc} • {item.type}</p>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <p style={{ fontWeight: 700, color: '#0fb48c', fontSize: '14px' }}>{item.time}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="chart-card" style={{ padding: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                            <h3 style={{ fontSize: '18px', fontWeight: 700 }}>System Activity</h3>
-                            <Activity size={18} color="#64748b" />
-                        </div>
-                        <div className="activity-list" style={{ marginLeft: '12px', borderLeft: '2px solid #f1f5f9', paddingLeft: '24px', position: 'relative' }}>
-                            {[
-                                { text: 'Prescription issued #9021', time: '5m ago', color: '#0fb48c' },
-                                { text: 'New Doctor registered', time: '1h ago', color: '#3b82f6' },
-                                { text: 'Emergency alert in Ward 4', time: '2h ago', color: '#ef4444' }
-                            ].map((act, i) => (
-                                <div key={i} style={{ marginBottom: '24px', position: 'relative' }}>
-                                    <div style={{
-                                        position: 'absolute',
-                                        left: '-31px',
-                                        top: '4px',
-                                        width: '12px',
-                                        height: '12px',
-                                        borderRadius: '50%',
-                                        background: 'white',
-                                        border: `3px solid ${act.color}`
-                                    }}></div>
-                                    <p style={{ fontWeight: 600, fontSize: '14px' }}>{act.text}</p>
-                                    <p style={{ fontSize: '12px', color: '#94a3b8' }}>{act.time}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <AdminUpcomingAppointments appointments={upcomingAppointments} />
+                    <SystemActivity activities={systemActivities} />
                 </div>
             </div>
         </AdminLayout>
