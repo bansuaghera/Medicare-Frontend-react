@@ -1,9 +1,17 @@
 import UserLayout from "../../layouts/UserLayout";
 import { Link } from "react-router-dom";
-import { Calendar, User, CheckCircle, Clock, Plus, Search, UserCircle2 } from "lucide-react";
+import { Calendar, User, CheckCircle, Clock } from "lucide-react";
 import "../../styles/adminDashboard.css";
 
+import UserQuickActions from "../../components/user/UserQuickActions";
+import UserUpcomingAppointments from "../../components/user/UserUpcomingAppointments";
+
 export default function UserDashboard() {
+    const appointments = [
+        { doctor: "Dr. Ramesh Sharma", specialty: "Cardiology", date: "2024-02-15", time: "10:00 AM", iconBg: "#f3e8ff", iconColor: "#a855f7" },
+        { doctor: "Dr. Anjali Gupta", specialty: "Pediatrics", date: "2024-02-20", time: "02:00 PM", iconBg: "#dbeafe", iconColor: "#3b82f6" }
+    ];
+
     return (
         <UserLayout panelTitle="User Panel">
             <div className="dashboard-page" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
@@ -56,6 +64,10 @@ export default function UserDashboard() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+<<<<<<< HEAD
+                    <UserQuickActions />
+                    <UserUpcomingAppointments appointments={appointments} />
+=======
                     {/* Quick Actions */}
                     <div style={{ background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '24px' }}>
                         <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '20px' }}>Quick Actions</h3>
@@ -114,6 +126,7 @@ export default function UserDashboard() {
 
                         </div>
                     </div>
+>>>>>>> 5c8785e0f7f2316ed510f25369ddd8b0060e1b3a
                 </div>
             </div>
         </UserLayout>

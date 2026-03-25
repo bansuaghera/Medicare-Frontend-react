@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   Mail,
   Lock,
@@ -17,6 +18,15 @@ export default function Login() {
   const { isDarkMode, toggleTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      console.log("Google Auth Success", codeResponse);
+      alert("Google Login Successful!");
+      navigate("/user/dashboard"); // Route appropriately or handle backend verify
+    },
+    onError: (error) => console.log("Google Auth Failed", error)
+  });
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -156,7 +166,7 @@ export default function Login() {
               Login
             </button>
 
-            <button type="button" className="google-login-btn">
+            <button type="button" className="google-login-btn" onClick={() => loginWithGoogle()}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.67 15.63 16.89 16.81 15.73 17.58V20.34H19.3C21.39 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4" />
                 <path d="M12 23C14.97 23 17.46 22.02 19.3 20.34L15.73 17.58C14.73 18.25 13.48 18.66 12 18.66C9.13 18.66 6.7 16.73 5.82 14.15H2.12V17.02C3.96 20.67 7.69 23 12 23Z" fill="#34A853" />
