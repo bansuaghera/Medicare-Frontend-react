@@ -1,0 +1,118 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import LandingPage from "../pages/LandingPage";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import ForgotPassword from "../pages/ForgotPassword";
+import VerifyOTP from "../pages/VerifyOTP";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import Users from "../pages/admin/Users";
+import Patients from "../pages/admin/Patients";
+import AddPatient from "../pages/admin/AddPatient";
+import Doctors from "../pages/admin/Doctors";
+import AddDoctor from "../pages/admin/AddDoctor";
+import Staff from "../pages/admin/Staff";
+import AddStaff from "../pages/admin/AddStaff";
+import OPDSchedule from "../pages/admin/OPDSchedule";
+import AddOPDSchedule from "../pages/admin/AddOPDSchedule";
+import Appointments from "../pages/admin/Appointments";
+import TokenQueue from "../pages/admin/TokenQueue";
+import Prescriptions from "../pages/admin/Prescriptions";
+import PrescriptionDetail from "../pages/admin/PrescriptionDetail";
+import Medicines from "../pages/admin/Medicines";
+import AddMedicine from "../pages/admin/AddMedicine";
+import Templates from "../pages/admin/Templates";
+import AddTemplate from "../pages/admin/AddTemplate";
+import Reports from "../pages/admin/Reports";
+import Settings from "../pages/admin/Settings";
+import UserProfile from "../pages/admin/Profile";
+import StaffDashboard from "../pages/staff/StaffDashboard";
+import RegisterPatient from "../pages/staff/RegisterPatient";
+import StaffPatients from "../pages/staff/Patients";
+import BookAppointment from "../pages/staff/BookAppointment";
+import GenerateToken from "../pages/staff/GenerateToken";
+import QueueMonitor from "../pages/staff/QueueMonitor";
+import CallToken from "../pages/staff/CallToken";
+import StaffOPDSchedule from "../pages/staff/OPDSchedule";
+import Print from "../pages/staff/Print";
+import StaffProfile from "../pages/staff/Profile";
+import DoctorDashboard from "../pages/doctor/DoctorDashboard";
+import DoctorAppointments from "../pages/doctor/Appointments";
+import DoctorPatients from "../pages/doctor/Patients";
+import DoctorExamination from "../pages/doctor/Examination";
+import DoctorPrescriptions from "../pages/doctor/Prescriptions";
+import DoctorSchedule from "../pages/doctor/Schedule";
+import DoctorFollowups from "../pages/doctor/Followups";
+import DoctorProfile from "../pages/doctor/Profile";
+import UserDashboard from "../pages/user/UserDashboard";
+import UserDoctors from "../pages/user/Doctors";
+import UserBookAppointment from "../pages/user/BookAppointment";
+import UserAppointments from "../pages/user/MyAppointments";
+import UserTokenStatus from "../pages/user/TokenStatus";
+import UserPrescriptions from "../pages/user/Prescriptions";
+import UserHistory from "../pages/user/History";
+import UserProfileSettings from "../pages/user/Profile";
+
+export default function AppRoutes() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/users" element={<Users />} />
+        <Route path="/admin/patients" element={<Patients />} />
+        <Route path="/admin/patients/add" element={<AddPatient />} />
+        <Route path="/admin/doctors" element={<Doctors />} />
+        <Route path="/admin/doctors/add" element={<AddDoctor />} />
+        <Route path="/admin/staff" element={<Staff />} />
+        <Route path="/admin/staff/add" element={<AddStaff />} />
+        <Route path="/admin/schedule" element={<OPDSchedule />} />
+        <Route path="/admin/schedule/add" element={<AddOPDSchedule />} />
+        <Route path="/admin/appointments" element={<Appointments />} />
+        <Route path="/admin/queue" element={<TokenQueue />} />
+        <Route path="/admin/prescriptions" element={<Prescriptions />} />
+        <Route path="/admin/prescriptions/detail" element={<PrescriptionDetail />} />
+        <Route path="/admin/medicines" element={<Medicines />} />
+        <Route path="/admin/medicines/add" element={<AddMedicine />} />
+        <Route path="/admin/templates" element={<Templates />} />
+        <Route path="/admin/templates/add" element={<AddTemplate />} />
+        <Route path="/admin/reports" element={<Reports />} />
+        <Route path="/admin/settings" element={<Settings />} />
+        <Route path="/admin/profile" element={<UserProfile />} />
+        <Route path="/staff/dashboard" element={<StaffDashboard />} />
+        <Route path="/staff/register-patient" element={<RegisterPatient />} />
+        <Route path="/staff/patients" element={<StaffPatients />} />
+        <Route path="/staff/appointments" element={<BookAppointment />} />
+        <Route path="/staff/tokens" element={<GenerateToken />} />
+        <Route path="/staff/queue" element={<QueueMonitor />} />
+        <Route path="/staff/call-token" element={<CallToken />} />
+        <Route path="/staff/schedule" element={<StaffOPDSchedule />} />
+        <Route path="/staff/print" element={<Print />} />
+        <Route path="/staff/profile" element={<StaffProfile />} />
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+        <Route path="/doctor/patients" element={<DoctorPatients />} />
+        <Route path="/doctor/examination" element={<DoctorExamination />} />
+        <Route path="/doctor/prescriptions" element={<DoctorPrescriptions />} />
+        <Route path="/doctor/schedule" element={<DoctorSchedule />} />
+        <Route path="/doctor/followups" element={<DoctorFollowups />} />
+        <Route path="/doctor/profile" element={<DoctorProfile />} />
+        <Route path="/user/dashboard" element={<UserDashboard />} />
+        <Route path="/user/doctors" element={<UserDoctors />} />
+        <Route path="/user/book-appointment" element={<UserBookAppointment />} />
+        <Route path="/user/appointments" element={<UserAppointments />} />
+        <Route path="/user/token-status" element={<UserTokenStatus />} />
+        <Route path="/user/prescriptions" element={<UserPrescriptions />} />
+        <Route path="/user/history" element={<UserHistory />} />
+        <Route path="/user/profile" element={<UserProfileSettings />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
