@@ -38,13 +38,26 @@ export default function BookAppointment() {
         e.preventDefault();
         const loadToast = toast.loading("Booking your appointment...");
         try {
+            // Convert "09:00 AM" → "09:00:00" for PostgreSQL TIME column
+            let timeValue = formData.time;
+            if (timeValue.includes("AM") || timeValue.includes("PM")) {
+                const [timePart, meridiem] = timeValue.split(" ");
+                let [hours, minutes] = timePart.split(":").map(Number);
+                if (meridiem === "PM" && hours !== 12) hours += 12;
+                if (meridiem === "AM" && hours === 12) hours = 0;
+                timeValue = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+            }
+
             const data = {
-                ...formData,
-                patientId: user.id
+                patientId: user.id,
+                doctorId: formData.doctorId,
+                date: formData.date,
+                time: timeValue,
+                reason: formData.reason
             };
-            const res = await API.post("/appointments", data);
+            const res = await API.post("/appointments/book", data);
             if (res.data.success) {
-                toast.success("Appointment booked successfully!", { id: loadToast });
+                toast.success(`Booked! Your token: #${res.data.token}`, { id: loadToast, duration: 4000 });
                 navigate("/user/appointments");
             }
         } catch (error) {

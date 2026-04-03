@@ -15,21 +15,20 @@ export default function MyAppointments() {
     const fetchAppointments = async () => {
         if (!user.id) return;
         try {
-            const res = await API.get("/appointments");
+            // Use dedicated patient appointments endpoint
+            const res = await API.get(`/appointments/patient/${user.id}`);
             if (res.data.success) {
-                // Filter appointments for this user only
-                const myApts = res.data.data
-                    .filter(app => app.patientId === user.id)
-                    .map(app => ({
-                        id: app.id,
-                        doctor: app.doctor?.name || "Unassigned",
-                        specialty: app.doctor?.Doctor?.specialization || "General",
-                        date: app.date,
-                        time: app.time,
-                        room: "Room 101", // Placeholder or from doctor schedule
-                        status: app.status.charAt(0) + app.status.slice(1).toLowerCase(),
-                        actionable: app.status.toLowerCase() === 'pending' || app.status.toLowerCase() === 'confirmed'
-                    }));
+                const myApts = res.data.data.map(app => ({
+                    id: app.id,
+                    token: app.tokenNumber,
+                    doctor: app.Doctor?.name || "Unassigned",
+                    specialty: app.Doctor?.Doctor?.specialization || "General",
+                    date: app.date,
+                    time: app.time,
+                    reason: app.reason || "Checkup",
+                    status: app.status || "pending",
+                    actionable: app.status === "pending" || app.status === "in-progress"
+                }));
                 setAppointments(myApts);
             }
         } catch (error) {
@@ -47,8 +46,7 @@ export default function MyAppointments() {
         if (window.confirm("Are you sure you want to cancel this appointment?")) {
             const loadToast = toast.loading("Cancelling appointment...");
             try {
-                // Assuming backend supports status update
-                await API.put(`/appointments/${id}`, { status: 'cancelled' });
+                await API.put(`/appointments/${id}/status`, { status: 'cancelled' });
                 toast.success("Appointment cancelled", { id: loadToast });
                 fetchAppointments();
             } catch (error) {
@@ -58,18 +56,17 @@ export default function MyAppointments() {
     };
 
     const getStatusStyle = (status) => {
-        switch (status.toLowerCase()) {
-            case 'confirmed': return { background: '#e7f7f3', color: '#0fb48c' };
-            case 'pending': return { background: '#fef9c3', color: '#a16207' };
-            case 'completed': return { background: '#f1f5f9', color: '#64748b' };
-            case 'cancelled': return { background: '#fee2e2', color: '#ef4444' };
-            default: return { background: '#f1f5f9', color: '#64748b' };
+        switch (status) {
+            case 'in-progress': return { background: '#dbeafe', color: '#1d4ed8', label: 'In Progress' };
+            case 'completed': return { background: '#dcfce7', color: '#166534', label: 'Completed' };
+            case 'cancelled': return { background: '#fee2e2', color: '#ef4444', label: 'Cancelled' };
+            default: return { background: '#fef9c3', color: '#a16207', label: 'Pending' };
         }
     };
 
     const filteredAppointments = appointments.filter(apt => 
         apt.doctor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        apt.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.status.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -97,13 +94,14 @@ export default function MyAppointments() {
                         <p style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Loading your appointments...</p>
                     ) : filteredAppointments.length > 0 ? filteredAppointments.map((apt) => (
                         <div key={apt.id} style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                                 <div>
-                                    <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0' }}>{apt.doctor}</h3>
-                                    <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>{apt.specialty}</p>
+                                    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600', marginBottom: '4px' }}>TOKEN #{apt.token}</div>
+                                    <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0' }}>Dr. {apt.doctor}</h3>
+                                    <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>{apt.specialty} • {apt.reason}</p>
                                 </div>
-                                <span style={{ ...getStatusStyle(apt.status), padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '700' }}>
-                                    {apt.status}
+                                <span style={{ ...(getStatusStyle(apt.status)), padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '700' }}>
+                                    {getStatusStyle(apt.status).label}
                                 </span>
                             </div>
                             

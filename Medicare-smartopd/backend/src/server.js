@@ -14,10 +14,12 @@ app.use(express.json());
 const userRoutes = require('./routes/userRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const opdRoutes = require('./routes/opdRoutes');
+const prescriptionRoutes = require('./routes/prescriptionRoutes');
 
 app.use('/api/users', userRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/opd', opdRoutes);
+app.use('/api/prescriptions', prescriptionRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -33,8 +35,8 @@ const startServer = async () => {
     // Connect to Database
     await connectDB();
 
-    // Sync Models (Use { force: false } in production)
-    await sequelize.sync({ force: false });
+    // Sync Models - alter:true adds missing columns without dropping data
+    await sequelize.sync({ alter: true });
     console.log('Database synced successfully');
 
     app.listen(PORT, () => {

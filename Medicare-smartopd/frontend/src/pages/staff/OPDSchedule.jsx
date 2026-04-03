@@ -1,101 +1,163 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import StaffLayout from "../../layouts/StaffLayout";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Stethoscope, Users } from "lucide-react";
+import API from "../../api/axiosConfig";
+import toast from "react-hot-toast";
 
 export default function OPDSchedule() {
-    const [currentDate, setCurrentDate] = useState(new Date("2026-02-13"));
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [doctors, setDoctors] = useState([]);
+    const [appointments, setAppointments] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const schedules = [
-        { doctor: "Dr. Ramesh Sharma", time: "09:00 AM - 12:00 PM", room: "Room 101", slots: 12 },
-        { doctor: "Dr. Anjali Gupta", time: "10:00 AM - 01:00 PM", room: "Room 102", slots: 15 },
-        { doctor: "Dr. Amit Patel", time: "02:00 PM - 05:00 PM", room: "Room 103", slots: 10 },
-        { doctor: "Dr. Prakash Iyer", time: "03:00 PM - 06:00 PM", room: "Room 104", slots: 8 },
-        { doctor: "Dr. Lisa Thompson", time: "11:00 AM - 02:00 PM", room: "Room 105", slots: 6 },
-    ];
+    const today = new Date();
+    const currentYear = selectedDate.getFullYear();
+    const currentMonth = selectedDate.getMonth();
 
-    const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-    const dates = [
-        [26, 27, 28, 29, 30, 31, 1],
-        [2, 3, 4, 5, 6, 7, 8],
-        [9, 10, 11, 12, 13, 14, 15],
-        [16, 17, 18, 19, 20, 21, 22],
-        [23, 24, 25, 26, 27, 28, 1],
-    ];
+    // Build calendar days
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const calendarDays = [];
+    for (let i = 0; i < firstDay; i++) calendarDays.push(null);
+    for (let d = 1; d <= daysInMonth; d++) calendarDays.push(d);
+
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+    const selectedDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [doctorsRes, apptRes] = await Promise.all([
+                    API.get("/users/doctors"),
+                    API.get("/appointments")
+                ]);
+                if (doctorsRes.data.success) setDoctors(doctorsRes.data.data);
+                if (apptRes.data.success) setAppointments(apptRes.data.data);
+            } catch {
+                toast.error("Failed to load schedule data");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // Count appointments per doctor on selected date
+    const getDoctorAppointmentsCount = (doctorId) =>
+        appointments.filter(a => a.doctorId === doctorId && a.date === selectedDateStr).length;
+
+    const prevMonth = () => setSelectedDate(new Date(currentYear, currentMonth - 1, 1));
+    const nextMonth = () => setSelectedDate(new Date(currentYear, currentMonth + 1, 1));
+    const selectDay = (day) => { if (day) setSelectedDate(new Date(currentYear, currentMonth, day)); };
 
     return (
         <StaffLayout panelTitle="Staff Panel">
-            <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '4px' }}>OPD Schedule</h1>
-                <p style={{ color: '#666', fontSize: '14px' }}>View doctor schedules</p>
+            <div style={{ marginBottom: "24px" }}>
+                <h1 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "4px" }}>OPD Schedule</h1>
+                <p style={{ color: "#666", fontSize: "14px" }}>Doctor availability for {monthNames[currentMonth]} {currentYear}</p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '350px 1fr', gap: '24px' }}>
+            <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "24px" }}>
 
                 {/* Calendar Widget */}
-                <div style={{ background: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', height: 'fit-content' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '20px', color: '#333' }}>Select Date</h3>
+                <div style={{ background: "#fff", borderRadius: "12px", padding: "24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", height: "fit-content" }}>
+                    <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "20px", color: "#333" }}>Select Date</h3>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                        <button onClick={prevMonth} style={{ background: "none", border: "none", cursor: "pointer", color: "#666", padding: "4px" }}>
                             <ChevronLeft size={20} />
                         </button>
-                        <span style={{ fontSize: '15px', fontWeight: '600', color: '#333' }}>February 2026</span>
-                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+                        <span style={{ fontSize: "15px", fontWeight: "600", color: "#333" }}>{monthNames[currentMonth]} {currentYear}</span>
+                        <button onClick={nextMonth} style={{ background: "none", border: "none", cursor: "pointer", color: "#666", padding: "4px" }}>
                             <ChevronRight size={20} />
                         </button>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', textAlign: 'center', marginBottom: '12px' }}>
-                        {days.map(day => (
-                            <div key={day} style={{ fontSize: '12px', color: '#888', fontWeight: '500' }}>{day}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px", textAlign: "center", marginBottom: "8px" }}>
+                        {dayNames.map(d => (
+                            <div key={d} style={{ fontSize: "12px", color: "#888", fontWeight: "600", padding: "4px" }}>{d}</div>
                         ))}
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {dates.map((week, wIndex) => (
-                            <div key={wIndex} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', textAlign: 'center' }}>
-                                {week.map((date, dIndex) => {
-                                    const isCurrentMonth = (wIndex === 0 && date > 20) || (wIndex === 4 && date < 10) ? false : true;
-                                    const isSelected = date === 13 && isCurrentMonth;
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px", textAlign: "center" }}>
+                        {calendarDays.map((day, i) => {
+                            const isToday = day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+                            const isSelected = day === selectedDate.getDate() && currentMonth === selectedDate.getMonth() && currentYear === selectedDate.getFullYear();
+                            return (
+                                <div
+                                    key={i}
+                                    onClick={() => selectDay(day)}
+                                    style={{
+                                        padding: "8px 0",
+                                        fontSize: "14px",
+                                        color: day ? (isSelected ? "#fff" : isToday ? "#0fb48c" : "#333") : "transparent",
+                                        background: isSelected ? "#0fb48c" : "transparent",
+                                        borderRadius: "8px",
+                                        cursor: day ? "pointer" : "default",
+                                        fontWeight: isSelected || isToday ? "700" : "400",
+                                        border: isToday && !isSelected ? "1px solid #0fb48c" : "none"
+                                    }}
+                                >
+                                    {day || ""}
+                                </div>
+                            );
+                        })}
+                    </div>
 
-                                    return (
-                                        <div
-                                            key={`${wIndex}-${dIndex}`}
-                                            style={{
-                                                padding: '8px 0',
-                                                fontSize: '14px',
-                                                color: isSelected ? '#fff' : (isCurrentMonth ? '#333' : '#ccc'),
-                                                background: isSelected ? '#333' : 'transparent',
-                                                borderRadius: '8px',
-                                                cursor: 'pointer',
-                                                fontWeight: isSelected ? '600' : '400'
-                                            }}
-                                        >
-                                            {date}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ))}
+                    <div style={{ marginTop: "20px", padding: "12px", background: "#f0fdf9", borderRadius: "8px", textAlign: "center" }}>
+                        <p style={{ fontSize: "13px", color: "#0fb48c", fontWeight: "600" }}>
+                            {appointments.filter(a => a.date === selectedDateStr).length} appointments on this day
+                        </p>
                     </div>
                 </div>
 
-                {/* Schedule List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {schedules.map((schedule, index) => (
-                        <div key={index} style={{ background: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>{schedule.doctor}</h3>
-                                <p style={{ fontSize: '14px', color: '#666' }}>{schedule.time} • {schedule.room}</p>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '28px', fontWeight: '700', color: '#0fb48c' }}>{schedule.slots}</div>
-                                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>Available Slots</div>
-                            </div>
+                {/* Doctor Schedule List */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", margin: 0 }}>
+                        Doctors Available — {String(selectedDate.getDate()).padStart(2, "0")} {monthNames[currentMonth]}
+                    </h3>
+
+                    {loading ? (
+                        <div style={{ textAlign: "center", padding: "60px", color: "#999", background: "#fff", borderRadius: "12px" }}>Loading schedule...</div>
+                    ) : doctors.length === 0 ? (
+                        <div style={{ textAlign: "center", padding: "60px", color: "#999", background: "#fff", borderRadius: "12px" }}>
+                            <Stethoscope size={48} style={{ marginBottom: "16px", opacity: 0.3 }} />
+                            <p>No doctors registered yet. Add doctors from Admin Panel.</p>
                         </div>
-                    ))}
+                    ) : doctors.map((doc, index) => {
+                        const apptCount = getDoctorAppointmentsCount(doc.id);
+                        const colors = ["#7c3aed", "#0fb48c", "#3b82f6", "#ea580c", "#ec4899"];
+                        const color = colors[index % colors.length];
+                        return (
+                            <div key={doc.id} style={{ background: "#fff", borderRadius: "12px", padding: "20px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                                    <div style={{ background: `${color}15`, color, width: "48px", height: "48px", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        <Stethoscope size={22} />
+                                    </div>
+                                    <div>
+                                        <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", marginBottom: "4px" }}>Dr. {doc.name}</h3>
+                                        <p style={{ fontSize: "13px", color: "#64748b" }}>
+                                            {doc.Doctor?.specialization || "General"} • {doc.Doctor?.phone || "N/A"}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
+                                    <div style={{ textAlign: "center" }}>
+                                        <div style={{ fontSize: "24px", fontWeight: "700", color }}>{apptCount}</div>
+                                        <div style={{ fontSize: "12px", color: "#64748b" }}>Appointments</div>
+                                    </div>
+                                    <div style={{ textAlign: "center" }}>
+                                        <span style={{ background: "#e8fdf5", color: "#0fb48c", padding: "6px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: "600" }}>
+                                            Available
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
-
             </div>
         </StaffLayout>
     );

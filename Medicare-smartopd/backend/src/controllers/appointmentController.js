@@ -111,3 +111,18 @@ exports.getPatientAppointments = async (req, res) => {
   }
 };
 
+// @desc Get ALL appointments for a doctor (for examination dropdown)
+// @route GET /api/appointments/doctor/:doctorId
+exports.getDoctorAppointments = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const appointments = await Appointment.findAll({
+      where: { doctorId },
+      include: [{ model: User, as: 'Patient', attributes: ['name', 'email'] }],
+      order: [['date', 'DESC'], ['tokenNumber', 'ASC']]
+    });
+    res.status(200).json({ success: true, count: appointments.length, data: appointments });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

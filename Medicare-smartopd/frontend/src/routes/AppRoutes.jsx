@@ -86,6 +86,7 @@ export default function AppRoutes() {
         <Route path="/admin/reports" element={<Reports />} />
         <Route path="/admin/settings" element={<Settings />} />
         <Route path="/admin/profile" element={<UserProfile />} />
+        <Route path="/admin/profile/:userId" element={<UserProfile />} />
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
         <Route path="/staff/register-patient" element={<RegisterPatient />} />
         <Route path="/staff/patients" element={<StaffPatients />} />
@@ -100,6 +101,7 @@ export default function AppRoutes() {
         <Route path="/doctor/appointments" element={<DoctorAppointments />} />
         <Route path="/doctor/patients" element={<DoctorPatients />} />
         <Route path="/doctor/examination" element={<DoctorExamination />} />
+        <Route path="/doctor/examination/:appointmentId" element={<DoctorExamination />} />
         <Route path="/doctor/prescriptions" element={<DoctorPrescriptions />} />
         <Route path="/doctor/schedule" element={<DoctorSchedule />} />
         <Route path="/doctor/followups" element={<DoctorFollowups />} />

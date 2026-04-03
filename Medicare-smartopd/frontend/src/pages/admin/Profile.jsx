@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import {
     User,
@@ -10,13 +12,81 @@ import {
     Activity,
     Award,
     Clock,
-    ChevronLeft
+    ChevronLeft,
+    Stethoscope
 } from "lucide-react";
+import API from "../../api/axiosConfig";
+import toast from "react-hot-toast";
 import "../../styles/patients.css";
 
 export default function UserProfile() {
-    // Mock data for a versatile profile view
-    const user = {
+    const { userId } = useParams();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(userId ? true : false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (userId) {
+            fetchUserProfile();
+        }
+    }, [userId]);
+
+    const fetchUserProfile = async () => {
+        try {
+            setLoading(true);
+            const res = await API.get(`/users/${userId}`);
+            if (res.data.success) {
+                const userData = res.data.data;
+                
+                // Determine user role based on available data
+                let role = "Unknown";
+                let profileData = {};
+
+                if (userData.Doctor) {
+                    role = "Doctor";
+                    profileData = {
+                        specialty: userData.Doctor.specialization,
+                        phone: userData.Doctor.phone,
+                        experienceYears: userData.Doctor.experienceYears,
+                        availabilityStatus: userData.Doctor.availabilityStatus
+                    };
+                } else if (userData.Patient) {
+                    role = "Patient";
+                    profileData = {
+                        age: userData.Patient.age,
+                        gender: userData.Patient.gender,
+                        phone: userData.Patient.phone,
+                        bloodGroup: userData.Patient.bloodGroup
+                    };
+                } else if (userData.Staff) {
+                    role = "Staff";
+                    profileData = {
+                        designation: userData.Staff.designation,
+                        phone: userData.Staff.phone
+                    };
+                }
+
+                setUser({
+                    id: userData.id,
+                    name: userData.name,
+                    email: userData.email,
+                    role: role,
+                    ...profileData,
+                    status: "Active",
+                    joinDate: userData.createdAt?.split("T")[0] || "N/A"
+                });
+            }
+        } catch (err) {
+            console.error("Error fetching user profile:", err);
+            setError("Failed to load user profile");
+            toast.error("Failed to load user profile");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Mock data for demonstration when no userId is provided
+    const defaultUser = {
         name: "Rahul Verma",
         role: "Patient",
         email: "rahul.v@example.com",
@@ -27,8 +97,39 @@ export default function UserProfile() {
         id: "MED-90210",
         gender: "Male",
         bloodGroup: "O+",
-        status: "Active"
+        status: "Active",
+        specialty: null,
+        experienceYears: null,
+        age: null
     };
+
+    const displayUser = user || defaultUser;
+
+    if (loading) {
+        return (
+            <AdminLayout panelTitle="Admin Panel">
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '32px', marginBottom: '16px' }}>Loading...</div>
+                        <p style={{ color: '#666' }}>Fetching profile information...</p>
+                    </div>
+                </div>
+            </AdminLayout>
+        );
+    }
+
+    if (error && userId) {
+        return (
+            <AdminLayout panelTitle="Admin Panel">
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                    <div style={{ textAlign: 'center', color: '#d32f2f' }}>
+                        <div style={{ fontSize: '20px', marginBottom: '16px' }}>Error</div>
+                        <p>{error}</p>
+                    </div>
+                </div>
+            </AdminLayout>
+        );
+    }
 
     return (
         <AdminLayout panelTitle="Admin Panel">
@@ -45,7 +146,7 @@ export default function UserProfile() {
                 <div className="page-header">
                     <div className="page-title">
                         <h1>Profile Information</h1>
-                        <p>View detailed information for {user.name}</p>
+                        <p>View detailed information for {displayUser.name}</p>
                     </div>
                     <button className="add-btn">
                         <Edit3 size={18} />
@@ -61,8 +162,8 @@ export default function UserProfile() {
                             <div style={{
                                 width: '120px',
                                 height: '120px',
-                                background: '#e7f7f3',
-                                color: '#0fb48c',
+                                background: displayUser.role === 'Doctor' ? '#f3e5f5' : '#e7f7f3',
+                                color: displayUser.role === 'Doctor' ? '#7c3aed' : '#0fb48c',
                                 borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -71,19 +172,19 @@ export default function UserProfile() {
                                 fontWeight: 800,
                                 margin: '0 auto 20px'
                             }}>
-                                {user.name.charAt(0)}
+                                {displayUser.role === 'Doctor' ? <Stethoscope size={48} /> : displayUser.name.charAt(0)}
                             </div>
-                            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#1a1a1a' }}>{user.name}</h2>
-                            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>{user.id}</p>
+                            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#1a1a1a' }}>{displayUser.name}</h2>
+                            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>{displayUser.id}</p>
                             <span style={{
-                                background: '#e7f7f3',
-                                color: '#0fb48c',
+                                background: displayUser.role === 'Doctor' ? '#f3e5f5' : '#e7f7f3',
+                                color: displayUser.role === 'Doctor' ? '#7c3aed' : '#0fb48c',
                                 padding: '6px 16px',
                                 borderRadius: '20px',
                                 fontSize: '12px',
                                 fontWeight: 700
                             }}>
-                                {user.role}
+                                {displayUser.role}
                             </span>
                         </div>
 
@@ -120,20 +221,36 @@ export default function UserProfile() {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Full Name</label>
-                                    <p style={{ fontWeight: 600 }}>{user.name}</p>
+                                    <p style={{ fontWeight: 600 }}>{displayUser.name}</p>
                                 </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Gender</label>
-                                    <p style={{ fontWeight: 600 }}>{user.gender}</p>
-                                </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Date of Birth</label>
-                                    <p style={{ fontWeight: 600 }}>{user.dob}</p>
-                                </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Blood Group</label>
-                                    <p style={{ fontWeight: 600 }}>{user.bloodGroup}</p>
-                                </div>
+                                {displayUser.role === 'Doctor' && displayUser.specialty && (
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Specialty</label>
+                                        <p style={{ fontWeight: 600 }}>{displayUser.specialty}</p>
+                                    </div>
+                                )}
+                                {displayUser.role === 'Doctor' && displayUser.experienceYears && (
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Experience</label>
+                                        <p style={{ fontWeight: 600 }}>{displayUser.experienceYears} years</p>
+                                    </div>
+                                )}
+                                {displayUser.role === 'Patient' && (
+                                    <>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Gender</label>
+                                            <p style={{ fontWeight: 600 }}>{displayUser.gender || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Age</label>
+                                            <p style={{ fontWeight: 600 }}>{displayUser.age || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Blood Group</label>
+                                            <p style={{ fontWeight: 600 }}>{displayUser.bloodGroup || 'N/A'}</p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -148,21 +265,14 @@ export default function UserProfile() {
                                     <div style={{ padding: '10px', background: '#f8fafc', borderRadius: '10px' }}><Mail size={18} color="#64748b" /></div>
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '2px' }}>Email Address</label>
-                                        <p style={{ fontWeight: 600 }}>{user.email}</p>
+                                        <p style={{ fontWeight: 600 }}>{displayUser.email}</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                                     <div style={{ padding: '10px', background: '#f8fafc', borderRadius: '10px' }}><Phone size={18} color="#64748b" /></div>
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '2px' }}>Phone Number</label>
-                                        <p style={{ fontWeight: 600 }}>{user.phone}</p>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', gridColumn: 'span 2' }}>
-                                    <div style={{ padding: '10px', background: '#f8fafc', borderRadius: '10px' }}><MapPin size={18} color="#64748b" /></div>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '2px' }}>Residential Address</label>
-                                        <p style={{ fontWeight: 600 }}>{user.address}</p>
+                                        <p style={{ fontWeight: 600 }}>{displayUser.phone || 'N/A'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +287,7 @@ export default function UserProfile() {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Joined Date</label>
-                                    <p style={{ fontWeight: 600 }}>{user.joinDate}</p>
+                                    <p style={{ fontWeight: 600 }}>{displayUser.joinDate}</p>
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Account Status</label>
@@ -189,7 +299,7 @@ export default function UserProfile() {
                                         fontSize: '12px',
                                         fontWeight: 700
                                     }}>
-                                        {user.status}
+                                        {displayUser.status}
                                     </span>
                                 </div>
                             </div>

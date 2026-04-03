@@ -22,12 +22,13 @@ export default function Appointments() {
                 if (res.data.success) {
                     setAppointments(res.data.data.map(app => ({
                         id: app.id,
-                        patient: app.patient?.name || "Unknown",
-                        doctor: app.doctor?.name || "Assigning...",
+                        patient: app.Patient?.name || "Unknown",
+                        doctor: app.Doctor?.name || "Assigning...",
                         date: app.date,
                         time: app.time,
                         type: app.reason || "Checkup",
-                        status: app.status || "Pending"
+                        token: app.tokenNumber,
+                        status: app.status ? (app.status.charAt(0).toUpperCase() + app.status.slice(1)) : "Pending"
                     })));
                 }
             } catch (error) {
@@ -89,6 +90,7 @@ export default function Appointments() {
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Token</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
                                     <th>Date</th>
@@ -101,7 +103,8 @@ export default function Appointments() {
                             <tbody>
                                 {appointments.map((appt) => (
                                     <tr key={appt.id}>
-                                        <td>{appt.id}</td>
+                                        <td style={{ fontSize: "12px", color: "#94a3b8" }}>{appt.id.slice(0, 8)}...</td>
+                                        <td style={{ fontWeight: "700", color: "#0fb48c" }}>#{appt.token}</td>
                                         <td className="patient-name">{appt.patient}</td>
                                         <td>{appt.doctor}</td>
                                         <td>{appt.date}</td>

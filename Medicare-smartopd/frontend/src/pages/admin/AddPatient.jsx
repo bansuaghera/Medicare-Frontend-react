@@ -38,8 +38,8 @@ export default function AddPatient() {
             const res = await API.post("/users/register", {
                 name: `${formData.firstName} ${formData.lastName}`,
                 email: formData.email,
-                role: "user", // Patient role is 'user' in backend
-                age: 25, // For now, could calculate from dob
+                role: "user",
+                dob: formData.dob,
                 gender: formData.gender,
                 phone: formData.phone,
                 bloodGroup: formData.bloodGroup,

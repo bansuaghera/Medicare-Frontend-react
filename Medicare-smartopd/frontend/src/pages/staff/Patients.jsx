@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import StaffLayout from "../../layouts/StaffLayout";
 import { Search, Plus, Eye, Edit, Trash2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Patients() {
     const [searchTerm, setSearchTerm] = useState("");
+    const navigate = useNavigate();
 
     const patients = [
         { id: "1", name: "Rahul Verma", age: 45, gender: "Male", phone: "+91 98765-00001", lastVisit: "2024-02-10", status: "Active" },
@@ -77,7 +78,13 @@ export default function Patients() {
                                 </td>
                                 <td style={{ padding: '16px 0 16px 16px', textAlign: 'right' }}>
                                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', color: '#666' }}>
-                                        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><Eye size={18} /></button>
+                                        <button 
+                                            onClick={() => navigate(`/admin/profile/${patient.id}`)}
+                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}
+                                            title="View Profile"
+                                        >
+                                            <Eye size={18} />
+                                        </button>
                                         <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><Edit size={18} /></button>
                                         <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}><Trash2 size={18} /></button>
                                     </div>

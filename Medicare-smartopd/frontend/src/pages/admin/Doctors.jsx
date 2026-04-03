@@ -132,7 +132,7 @@ export default function Doctors() {
                                         </td>
                                         <td>
                                             <div className="actions">
-                                                <Link to="/admin/profile" className="action-btn" title="View Profile">
+                                                <Link to={`/admin/profile/${doctor.id}`} className="action-btn" title="View Profile">
                                                     <Eye size={18} />
                                                 </Link>
                                                 <Link to="/admin/doctors/add?mode=edit" className="action-btn">
