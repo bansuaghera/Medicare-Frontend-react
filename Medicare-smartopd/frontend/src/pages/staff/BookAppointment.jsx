@@ -102,9 +102,7 @@ export default function BookAppointment() {
 
         const loadToast = toast.loading("Deleting appointments...");
         try {
-            await Promise.all(Array.from(selectedIds).map(id => 
-                API.delete(`/appointments/${id}`)
-            ));
+            await API.delete("/appointments", { data: { appointmentIds: Array.from(selectedIds) } });
             setAppointments(prev => prev.filter(a => !selectedIds.has(a.id)));
             setSelectedIds(new Set());
             toast.success("Appointments deleted", { id: loadToast });

@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import API from "../api/axiosConfig";
+import { useTheme } from "./ThemeContext";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    const { syncWithUser } = useTheme();
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem("user");
         if (!savedUser || savedUser === "undefined") return null;
@@ -16,6 +18,11 @@ export const AuthProvider = ({ children }) => {
     });
 
     const [loading, setLoading] = useState(!localStorage.getItem("user"));
+
+    // Sync theme whenever user data is loaded/updated
+    useEffect(() => {
+        if (user) syncWithUser(user);
+    }, [user, syncWithUser]);
 
     const login = (userData, token) => {
         setUser(userData);

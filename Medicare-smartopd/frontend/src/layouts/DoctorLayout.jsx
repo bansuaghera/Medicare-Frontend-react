@@ -40,6 +40,11 @@ export default function DoctorLayout({ children, panelTitle = "Doctor Panel" }) 
             }
         };
 
+        if (location.pathname.includes('notifications')) {
+            setUnreadCount(0);
+            return;
+        }
+
         fetchUnreadCount();
         const interval = setInterval(fetchUnreadCount, 60000);
         return () => clearInterval(interval);

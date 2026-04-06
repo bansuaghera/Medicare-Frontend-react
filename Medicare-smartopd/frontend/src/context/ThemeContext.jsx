@@ -9,6 +9,19 @@ export const ThemeProvider = ({ children }) => {
     const [primaryColor, setPrimaryColor] = useState(() => localStorage.getItem("primaryColor") || "#0fb48c");
 
     const [fontFamily, setFontFamily] = useState(() => localStorage.getItem("fontFamily") || "'Inter', sans-serif");
+    const [lastSyncedUserId, setLastSyncedUserId] = useState(null);
+
+    // Sync theme with the logged-in user's database settings
+    const syncWithUser = (user) => {
+        if (!user || user.id === lastSyncedUserId) return;
+        
+        const settings = user.settings || {};
+        if (settings.theme) setThemeMode(settings.theme);
+        if (settings.primaryColor) setPrimaryColor(settings.primaryColor);
+        if (settings.fontFamily) setFontFamily(settings.fontFamily);
+        
+        setLastSyncedUserId(user.id);
+    };
 
     useEffect(() => {
         applyTheme(themeMode, primaryColor, fontFamily);
@@ -55,6 +68,7 @@ export const ThemeProvider = ({ children }) => {
             fontFamily,
             setFontFamily,
             toggleTheme, 
+            syncWithUser,
             isDarkMode: isDarkModeComputed 
         }}>
             {children}

@@ -1,8 +1,4 @@
-const User = require('../models/User');
-const Doctor = require('../models/Doctor');
-const Patient = require('../models/Patient');
-const Staff = require('../models/Staff');
-const Activity = require('../models/Activity');
+const { User, Doctor, Patient, Staff, Activity } = require('../models');
 const { sequelize } = require('../config/db');
 const { sendWelcomeEmail, sendRegistrationEmail, sendPasswordResetOtp } = require('../utils/mailSender');
 const crypto = require('crypto');

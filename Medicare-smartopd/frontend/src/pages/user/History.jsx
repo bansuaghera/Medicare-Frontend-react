@@ -1,7 +1,8 @@
 import UserLayout from "../../layouts/UserLayout";
-import { Stethoscope, Calendar, Search, Clock, Hash, AlertCircle } from "lucide-react";
+import { Stethoscope, Calendar, Search, Clock, Hash, AlertCircle, Trash2, CheckSquare, Square, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import API from "../../api/axiosConfig";
+import toast from "react-hot-toast";
 
 export default function History() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -9,157 +10,123 @@ export default function History() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const [selectedIds, setSelectedIds] = useState([]);
+    const itemsPerPage = 8;
 
-    useEffect(() => {
-        const fetchHistory = async () => {
-            if (!user.id) return;
-            try {
-                const res = await API.get(`/appointments/patient/${user.id}`);
-                if (res.data.success) {
-                    const allAppointments = res.data.data || [];
-                    // Map all appointments as history records
-                    const mapped = allAppointments
-                        .filter(app => ['completed', 'cancelled'].includes(app.status))
-                        .map(app => ({
+    const fetchHistory = async (silent = false) => {
+        if (!user.id) return;
+        if (!silent) setLoading(true);
+        try {
+            const res = await API.get(`/appointments/patient/${user.id}`);
+            if (res.data.success) {
+                const mapped = (res.data.data || [])
+                    .filter(app => ['completed', 'cancelled'].includes(app.status))
+                    .map(app => ({
                         id: app.id,
-                        title: app.reason || "General Checkup",
-                        doctor: app.Doctor?.name || "Unassigned",
+                        title: app.reason || "Clinical Review",
+                        doctor: app.Doctor?.name || "Clinic Staff",
                         date: app.date,
                         time: app.time,
                         token: app.tokenNumber,
-                        status: app.status || "pending"
+                        status: app.status
                     }));
-                    setHistoryData(mapped);
-                }
-            } catch (error) {
-                console.error("Failed to load history:", error);
-            } finally {
-                setLoading(false);
+                setHistoryData(mapped);
             }
-        };
-        fetchHistory();
-    }, [user.id]);
-
-    const getStatusStyle = (status) => {
-        switch (status) {
-            case 'completed': return { bg: '#dcfce7', color: '#166534', label: 'Completed' };
-            case 'in-progress': return { bg: '#dbeafe', color: '#1d4ed8', label: 'In Progress' };
-            case 'cancelled': return { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled' };
-            default: return { bg: '#fef9c3', color: '#92400e', label: 'Pending' };
+        } catch (error) {
+            toast.error("Failed to sync History.");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return "—";
-        const d = new Date(dateStr + "T00:00:00");
-        return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    useEffect(() => {
+        fetchHistory();
+    }, [user.id]);
+
+    const handleSelectToggle = (id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    const handleSelectAll = () => setSelectedIds(selectedIds.length === filteredHistory.length ? [] : filteredHistory.map(r => r.id));
+
+    const handleDeleteSelected = async () => {
+        if (selectedIds.length === 0) return;
+        if (!window.confirm(`Wipe ${selectedIds.length} historical records? This is permanent.`)) return;
+        try {
+            await API.delete("/appointments", { data: { ids: selectedIds } });
+            toast.success("History vault cleaned.");
+            setHistoryData(historyData.filter(h => !selectedIds.includes(h.id)));
+            setSelectedIds([]);
+        } catch (error) { toast.error("Historical deletion failed."); }
+    };
+
+    const getStatusStyle = (status) => {
+        switch (status) {
+            case 'completed': return { bg: '#ecfdf5', color: '#047857', label: 'COMPLETED' };
+            case 'cancelled': return { bg: '#fef2f2', color: '#b91c1c', label: 'CANCELLED' };
+            default: return { bg: '#f9fafb', color: '#667085', label: status.toUpperCase() };
+        }
     };
 
     const filteredHistory = historyData.filter(item =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.doctor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.status.toLowerCase().includes(searchTerm.toLowerCase())
+        item.doctor.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
     const paginatedHistory = filteredHistory.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
 
     return (
-        <UserLayout panelTitle="User Panel">
-            <div className="dashboard-page" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
-                <div style={{ marginBottom: '32px' }}>
-                    <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>Visit History</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', margin: '0 0 16px 0' }}>Your complete medical visit history</p>
-
-                    <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
-                        <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-                        <input
-                            type="text"
-                            placeholder="Search by reason, doctor, or status..."
-                            value={searchTerm}
-                            onChange={(e) => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px' }}
-                        />
-                    </div>
+        <UserLayout panelTitle="Clinical Life Cycle">
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0' }}>
+                <div style={{ marginBottom: '40px' }}>
+                    <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#101828', margin: '0 0 8px 0' }}>Visit Archives</h1>
+                    <p style={{ color: '#667085', fontSize: '16px' }}>Your medical journey record through MediCare.</p>
                 </div>
 
-                {loading ? (
-                    <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>Loading visit history...</div>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {paginatedHistory.length > 0 ? paginatedHistory.map((item) => {
-                            const st = getStatusStyle(item.status);
-                            return (
-                                <div key={item.id} style={{ background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#e8fdf5', color: '#0fb48c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Stethoscope size={24} />
-                                        </div>
-                                        <div>
-                                            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>{item.title}</h3>
-                                            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: '0 0 8px 0' }}>Dr. {item.doctor}</p>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9ca3af', fontSize: '13px' }}>
-                                                    <Calendar size={14} />
-                                                    <span>{formatDate(item.date)}</span>
-                                                </div>
-                                                {item.time && (
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9ca3af', fontSize: '13px' }}>
-                                                        <Clock size={14} />
-                                                        <span>{item.time}</span>
-                                                    </div>
-                                                )}
-                                                {item.token && (
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#9ca3af', fontSize: '13px' }}>
-                                                        <Hash size={14} />
-                                                        <span>Token #{item.token}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <span style={{ background: st.bg, color: st.color, padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600' }}>
-                                        {st.label}
-                                    </span>
-                                </div>
-                            );
-                        }) : (
-                            <div style={{ textAlign: 'center', padding: '64px', color: 'var(--text-secondary)', background: 'var(--bg-secondary)', borderRadius: '16px', border: '2px dashed var(--border-color)' }}>
-                                <AlertCircle size={40} style={{ opacity: 0.3, marginBottom: '12px' }} />
-                                <p style={{ fontSize: '16px', margin: '0 0 6px 0' }}>No visit records found</p>
-                                <p style={{ fontSize: '14px', margin: 0 }}>
-                                    {searchTerm ? `No results for "${searchTerm}"` : "Your appointment history will appear here"}
-                                </p>
+                <div style={{ background: '#fff', borderRadius: '32px', border: '1px solid #eaecf0', padding: '32px', boxShadow: 'var(--shadow-sm)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                        <div style={{ display: 'flex', gap: '16px', flex: 1 }}>
+                            <div style={{ position: 'relative', width: '380px' }}>
+                                <Search size={20} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#667085' }} />
+                                <input type="text" placeholder="Filter medical history..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '12px 14px 12px 48px', borderRadius: '16px', border: '1px solid #d0d5dd', background: '#f9fafb', outline: 'none' }} />
                             </div>
+                            <button onClick={() => fetchHistory(true)} style={{ background: '#fff', border: '1px solid #eaecf0', padding: '14px', borderRadius: '16px', cursor: 'pointer' }}><RefreshCw size={20} className={loading ? 'animate-spin' : ''} /></button>
+                        </div>
+                        {selectedIds.length > 0 && <button onClick={handleDeleteSelected} style={{ background: '#fee4e2', color: '#f04438', border: 'none', padding: '14px 28px', borderRadius: '16px', fontWeight: '800', cursor: 'pointer' }}>Wipe Selected ({selectedIds.length})</button>}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', padding: '0 8px' }}>
+                         <button onClick={handleSelectAll} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: 0 }}>
+                            {selectedIds.length === filteredHistory.length && filteredHistory.length > 0 ? <CheckSquare size={22} color="#0fb48c" /> : <Square size={22} color="#eaecf0" />}
+                            <span style={{ fontSize: '13px', fontWeight: '800', color: '#475467' }}>SELECT ALL ARCHIVES</span>
+                         </button>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        {loading ? (
+                            <p style={{ textAlign: 'center', padding: '40px' }}>Accessing medical shards...</p>
+                        ) : paginatedHistory.length > 0 ? paginatedHistory.map((item) => (
+                            <div key={item.id} style={{ background: selectedIds.includes(item.id) ? '#f5faff' : '#f9fafb', border: selectedIds.includes(item.id) ? '1px solid #b2ccff' : '1px solid #eaecf0', padding: '24px', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '20px', transition: '0.2s' }}>
+                                <button onClick={() => handleSelectToggle(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                    {selectedIds.includes(item.id) ? <CheckSquare size={24} color="#0fb48c" /> : <Square size={24} color="#eaecf0" />}
+                                </button>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: '#ecfdf3', color: '#0fb48c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Stethoscope size={24}/></div>
+                                <div style={{ flex: 1 }}>
+                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: '#101828' }}>{item.title}</h3>
+                                    <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#667085' }}>Dr. {item.doctor}</p>
+                                    <div style={{ display: 'flex', gap: '20px', marginTop: '12px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#667085', fontWeight: '700' }}><Calendar size={14} />{item.date}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#667085', fontWeight: '700' }}><Clock size={14} />{item.time}</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#667085', fontWeight: '700' }}><Hash size={14} />Token #{item.token}</div>
+                                    </div>
+                                </div>
+                                <span style={{ background: getStatusStyle(item.status).bg, color: getStatusStyle(item.status).color, padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: '900' }}>{getStatusStyle(item.status).label}</span>
+                            </div>
+                        )) : (
+                            <div style={{ textAlign: 'center', padding: '80px', color: '#667085' }}>No visit archives found.</div>
                         )}
                     </div>
-                )}
-
-                {totalPages > 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '32px' }}>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border-input)', background: currentPage === 1 ? 'var(--bg-tertiary)' : 'var(--bg-secondary)', color: currentPage === 1 ? '#9ca3af' : 'var(--text-tertiary)', fontSize: '14px', fontWeight: '500', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
-                        >
-                            Previous
-                        </button>
-                        <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: '500' }}>Page {currentPage} of {totalPages}</span>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border-input)', background: currentPage === totalPages ? 'var(--bg-tertiary)' : 'var(--bg-secondary)', color: currentPage === totalPages ? '#9ca3af' : 'var(--text-tertiary)', fontSize: '14px', fontWeight: '500', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
-                        >
-                            Next
-                        </button>
-                    </div>
-                )}
+                </div>
             </div>
+            <style>{`.animate-spin { animation: spin 1s linear infinite; } @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
         </UserLayout>
     );
 }

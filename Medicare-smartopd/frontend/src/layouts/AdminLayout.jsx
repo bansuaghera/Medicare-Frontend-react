@@ -45,6 +45,16 @@ export default function AdminLayout({ children, panelTitle = "Admin Panel" }) {
             }
         };
 
+        if (location.pathname.includes('notifications')) {
+            setUnreadCount(0);
+            return;
+        }
+
+        if (location.pathname.includes('notifications')) {
+            setUnreadCount(0);
+            return;
+        }
+
         fetchUnreadCount();
         const interval = setInterval(fetchUnreadCount, 60000);
         return () => clearInterval(interval);

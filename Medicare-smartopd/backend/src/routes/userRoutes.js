@@ -35,6 +35,7 @@ router.get('/dashboard/stats', getDashboardStats);
 router.get('/:id/settings', getUserSettings);
 router.put('/:id/settings', updateUserSettings);
 router.delete('/bulk', deleteMultipleUsers);
+router.post('/bulk-delete', deleteMultipleUsers);
 router.delete('/clear-all', deleteAllUsers);
 router.get('/doctors', getDoctors);
 router.get('/patients', getPatients);
