@@ -15,7 +15,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .dashboard-layout {
@@ -66,6 +66,51 @@
 .sidebar-brand span {
     font-size: 12px;
     color: var(--text-muted);
+}
+
+.sidebar-profile-card {
+    padding: 20px;
+    margin: 12px;
+    background: var(--bg-primary);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.profile-info {
+    overflow: hidden;
+}
+
+.profile-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-email {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
 }
 
 .sidebar-menu {
@@ -133,7 +178,7 @@
     padding: 0 32px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     position: sticky;
     top: 0;
     z-index: 9;

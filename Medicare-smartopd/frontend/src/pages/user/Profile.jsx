@@ -1,15 +1,12 @@
+import React, { useState, useEffect } from "react";
 import UserLayout from "../../layouts/UserLayout";
-import { useNavigate } from "react-router-dom";
-import { User, Mail, ChevronDown, Calendar, Save, Phone, MapPin, Droplet, Loader } from "lucide-react";
-import { useState, useEffect } from "react";
+import { User, Mail, Phone, MapPin, Droplet, Edit2, Shield, Calendar, Activity, Loader } from "lucide-react";
+import ProfilePictureUpload from "../../components/common/ProfilePictureUpload";
 import API from "../../api/axiosConfig";
 import toast from "react-hot-toast";
 
 export default function Profile() {
-    const navigate = useNavigate();
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -18,65 +15,80 @@ export default function Profile() {
         gender: "other",
         bloodGroup: "",
         address: "",
-        medicalHistory: ""
+        medicalHistory: "",
+        profilePhoto: null
     });
+    const [loading, setLoading] = useState(true);
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     useEffect(() => {
         const fetchProfile = async () => {
-            if (!user.id) return;
+            if (!user?.id) {
+                setLoading(false);
+                return;
+            }
             try {
-                // Fetch user + patient data
-                const res = await API.get(`/users/patients`);
+                const res = await API.get(`/users/${user.id}`);
                 if (res.data.success) {
-                    const me = res.data.data.find(u => u.id === user.id);
+                    const me = res.data.data;
                     if (me) {
                         setFormData({
                             name: me.name || "",
                             email: me.email || "",
-                            phone: me.Patient?.phone || "",
+                            phone: me.Patient?.phone || me.phone || "",
                             dob: me.Patient?.dob || "",
                             gender: me.Patient?.gender || "other",
                             bloodGroup: me.Patient?.bloodGroup || "",
                             address: me.Patient?.address || "",
-                            medicalHistory: me.Patient?.medicalHistory || ""
+                            medicalHistory: me.Patient?.medicalHistory || "",
+                            profilePhoto: me.profilePhoto || null
                         });
                     }
                 }
-            } catch (error) {
-                console.error("Failed to load profile:", error);
-                // fallback to localStorage
-                setFormData(prev => ({ ...prev, name: user.name || "", email: user.email || "" }));
+            } catch (err) {
+                console.error("Failed to load patient profile:", err);
+                toast.error("Failed to load profile");
+                setFormData(prev => ({ ...prev, name: user.name || "", email: user.email || "", profilePhoto: user.profilePhoto || null }));
             } finally {
                 setLoading(false);
             }
         };
-        fetchProfile();
-    }, [user.id]);
 
-    const handleChange = (field, value) => {
+        fetchProfile();
+    }, [user?.id]);
+
+    const handlePhotoSave = async (newPhoto) => {
+        setFormData(prev => ({ ...prev, profilePhoto: newPhoto }));
+        try {
+            await API.put(`/users/${user.id}`, { profilePhoto: newPhoto });
+            // Update local storage so header/other components update
+            const updatedUser = { ...user, profilePhoto: newPhoto };
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+            toast.success("Profile photo updated successfully");
+        } catch (err) {
+            toast.error("Failed to save profile photo");
+        }
+    };
+
+    const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleSave = async (e) => {
-        e.preventDefault();
-        setSaving(true);
+    const handleSave = async () => {
+        if (!user?.id) return;
         const loadToast = toast.loading("Saving profile...");
         try {
-            // Update user name/email
             await API.put(`/users/${user.id}`, {
-                name: formData.name,
-                email: formData.email
+                ...formData
             });
-
-            // Update localStorage
             const updatedUser = { ...user, name: formData.name, email: formData.email };
             localStorage.setItem("user", JSON.stringify(updatedUser));
-
-            toast.success("Profile updated successfully!", { id: loadToast });
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to update profile", { id: loadToast });
-        } finally {
-            setSaving(false);
+            toast.success("Profile updated successfully", { id: loadToast });
+            setIsEditing(false);
+        } catch (err) {
+            console.error("Failed to update profile:", err);
+            toast.error(err.response?.data?.message || "Unable to save profile", { id: loadToast });
         }
     };
 
@@ -92,126 +104,196 @@ export default function Profile() {
         );
     }
 
+    const nameParts = formData.name.split(" ");
+    const initials = nameParts.length > 1 ? nameParts[0][0] + nameParts[1][0] : (formData.name.slice(0, 2).toUpperCase() || "US");
+
     return (
         <UserLayout panelTitle="User Panel">
-            <div className="dashboard-page" style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 16px' }}>
-                <div style={{ marginBottom: '32px' }}>
-                    <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 8px 0' }}>Profile Settings</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', margin: 0 }}>Manage your personal information</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+                <div>
+                    <h1 style={{ fontSize: "24px", fontWeight: "800", marginBottom: "4px", color: 'var(--text-primary)' }}>My Profile</h1>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "15px" }}>Manage your personal and health information</p>
                 </div>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    {isEditing ? (
+                        <>
+                            <button
+                                onClick={handleSave}
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#0fb48c', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '500', cursor: 'pointer' }}
+                            >
+                                <Edit2 size={16} />
+                                Save Changes
+                            </button>
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-quaternary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '10px 20px', borderRadius: '8px', fontWeight: '500', cursor: 'pointer' }}
+                            >
+                                Cancel
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#0fb48c', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '500', cursor: 'pointer' }}
+                        >
+                            <Edit2 size={16} />
+                            Edit Profile
+                        </button>
+                    )}
+                </div>
+            </div>
 
-                <div style={{ background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '32px' }}>
-                    {/* Avatar Header */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '32px' }}>
-                        <div style={{ width: '80px', height: '80px', borderRadius: '16px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: '800' }}>
-                            {formData.name ? formData.name.charAt(0).toUpperCase() : <User size={40} />}
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 2fr)', gap: '24px' }}>
+
+                {/* Left Column - Profile Card */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                    <div style={{ background: 'var(--bg-secondary)', borderRadius: '12px', padding: '32px 24px', border: '1px solid var(--border-color)', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <ProfilePictureUpload initialImage={formData.profilePhoto} onSave={handlePhotoSave} userName={formData.name} />
+                        <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>{formData.name || 'User'}</h2>
+                        <p style={{ color: '#0fb48c', fontWeight: '600', marginBottom: '16px' }}>Patient</p>
+
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                            <span style={{ padding: '6px 12px', background: 'var(--bg-tertiary)', borderRadius: '20px', fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>ID: {user?.id?.slice(0, 8) || 'N/A'}</span>
+                            <span style={{ padding: '6px 12px', background: 'var(--bg-tertiary)', borderRadius: '20px', fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>Blood: {formData.bloodGroup || 'Not set'}</span>
                         </div>
-                        <div>
-                            <h2 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>{formData.name || "User"}</h2>
-                            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', margin: 0 }}>Patient ID: {user.id?.slice(0, 8) || "—"}</p>
+
+                        <div style={{ width: '100%', height: '1px', background: 'var(--border-color)', marginBottom: '24px' }}></div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', textAlign: 'left' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-tertiary)', fontSize: '14px', fontWeight: '500' }}>
+                                <Mail size={18} /> <span style={{ color: 'var(--text-primary)' }}>{formData.email || 'Email not set'}</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-tertiary)', fontSize: '14px', fontWeight: '500' }}>
+                                <Phone size={18} /> <span style={{ color: 'var(--text-primary)' }}>{formData.phone || 'Phone not set'}</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-tertiary)', fontSize: '14px', fontWeight: '500' }}>
+                                <MapPin size={18} /> <span style={{ color: 'var(--text-primary)' }}>{formData.address || 'Address not set'}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                        {/* Name */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Full Name</label>
-                                <div style={{ position: 'relative' }}>
-                                    <User size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
-                                    <input type="text" value={formData.name} onChange={(e) => handleChange("name", e.target.value)}
-                                        style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)' }} />
-                                </div>
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Email</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
-                                    <input type="email" value={formData.email} onChange={(e) => handleChange("email", e.target.value)}
-                                        style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)' }} />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Phone & DOB */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Phone</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Phone size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
-                                    <input type="tel" value={formData.phone} readOnly
-                                        style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)', background: '#f9fafb' }} />
-                                </div>
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Date of Birth</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Calendar size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
-                                    <input type="date" value={formData.dob} readOnly
-                                        style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)', background: '#f9fafb' }} />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Gender & Blood Group */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Gender</label>
-                                <div style={{ position: 'relative' }}>
-                                    <select value={formData.gender} disabled
-                                        style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)', appearance: 'none', background: '#f9fafb' }}>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                    <ChevronDown size={20} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
-                                </div>
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Blood Group</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Droplet size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#ef4444' }} />
-                                    <input type="text" value={formData.bloodGroup || "—"} readOnly
-                                        style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)', background: '#f9fafb' }} />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Address */}
-                        <div>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Address</label>
-                            <div style={{ position: 'relative' }}>
-                                <MapPin size={18} style={{ position: 'absolute', left: '16px', top: '14px', color: '#6b7280' }} />
-                                <textarea value={formData.address} readOnly rows="2"
-                                    style={{ width: '100%', padding: '12px 16px 12px 42px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '15px', color: 'var(--text-primary)', resize: 'none', background: '#f9fafb' }} />
-                            </div>
-                        </div>
-
-                        {/* Medical History */}
-                        {formData.medicalHistory && (
-                            <div>
-                                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '8px' }}>Medical History</label>
-                                <div style={{ padding: '14px 16px', borderRadius: '8px', border: '1px solid var(--border-input)', fontSize: '14px', color: 'var(--text-primary)', background: '#fffbeb', lineHeight: '1.6' }}>
-                                    {formData.medicalHistory}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Actions */}
-                        <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
-                            <button type="submit" disabled={saving}
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: saving ? '#94a3b8' : 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', padding: '12px 24px', borderRadius: '8px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: saving ? 'not-allowed' : 'pointer' }}>
-                                <Save size={18} />
-                                {saving ? "Saving..." : "Save Changes"}
-                            </button>
-                            <button type="button" onClick={() => navigate('/user/dashboard')}
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-quaternary)', color: 'var(--text-tertiary)', padding: '12px 24px', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
                 </div>
+
+                {/* Right Column - Details */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                    <div style={{ background: 'var(--bg-secondary)', borderRadius: '12px', padding: '32px', border: '1px solid var(--border-color)', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                        <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '24px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <User size={20} color="#0fb48c" /> Personal Information
+                        </h3>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Full Name</label>
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('name', e.target.value)}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Email</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('email', e.target.value)}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Phone</label>
+                                <input
+                                    type="tel"
+                                    value={formData.phone}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Date of Birth</label>
+                                <input
+                                    type="date"
+                                    value={formData.dob}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('dob', e.target.value)}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Gender</label>
+                                <select
+                                    value={formData.gender || 'other'}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                >
+                                    <option value="female">Female</option>
+                                    <option value="male">Male</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Address</label>
+                                <input
+                                    type="text"
+                                    value={formData.address || ''}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('address', e.target.value)}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ background: 'var(--bg-secondary)', borderRadius: '12px', padding: '32px', border: '1px solid var(--border-color)', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                        <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '24px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Activity size={20} color="#ef4444" /> Health Details
+                        </h3>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Blood Group</label>
+                                <input
+                                    type="text"
+                                    value={formData.bloodGroup}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('bloodGroup', e.target.value)}
+                                    placeholder={isEditing ? 'e.g. O+, A-' : ''}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Patient ID</label>
+                                <input
+                                    type="text"
+                                    value={user?.id || ''}
+                                    disabled={true}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }}
+                                />
+                            </div>
+                            
+                            <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '13px', color: 'var(--text-tertiary)', fontWeight: '600' }}>Medical History</label>
+                                <textarea
+                                    value={formData.medicalHistory}
+                                    disabled={!isEditing}
+                                    onChange={(e) => handleInputChange('medicalHistory', e.target.value)}
+                                    placeholder={isEditing ? 'Any past conditions, allergies, or surgeries' : 'No medical history reported'}
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-input)', background: isEditing ? 'var(--bg-primary)' : 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '15px', outline: 'none', minHeight: '100px', resize: 'vertical' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
+
         </UserLayout>
     );
 }

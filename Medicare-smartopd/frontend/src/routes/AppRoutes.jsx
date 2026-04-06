@@ -25,7 +25,7 @@ import AddMedicine from "../pages/admin/AddMedicine";
 import Templates from "../pages/admin/Templates";
 import AddTemplate from "../pages/admin/AddTemplate";
 import Reports from "../pages/admin/Reports";
-import Settings from "../pages/admin/Settings";
+import GeneralSettings from "../pages/GeneralSettings";
 import UserProfile from "../pages/admin/Profile";
 import StaffDashboard from "../pages/staff/StaffDashboard";
 import RegisterPatient from "../pages/staff/RegisterPatient";
@@ -45,6 +45,7 @@ import DoctorPrescriptions from "../pages/doctor/Prescriptions";
 import DoctorSchedule from "../pages/doctor/Schedule";
 import DoctorFollowups from "../pages/doctor/Followups";
 import DoctorProfile from "../pages/doctor/Profile";
+import DoctorTokenQueue from "../pages/doctor/TokenQueue";
 import UserDashboard from "../pages/user/UserDashboard";
 import UserDoctors from "../pages/user/Doctors";
 import UserBookAppointment from "../pages/user/BookAppointment";
@@ -53,6 +54,10 @@ import UserTokenStatus from "../pages/user/TokenStatus";
 import UserPrescriptions from "../pages/user/Prescriptions";
 import UserHistory from "../pages/user/History";
 import UserProfileSettings from "../pages/user/Profile";
+import Notifications from "../pages/Notifications";
+import Feedback from "../pages/Feedback";
+import AdminFeedback from "../pages/admin/AdminFeedback";
+import ResetPassword from "../pages/ResetPassword";
 
 export default function AppRoutes() {
   return (
@@ -65,6 +70,7 @@ export default function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/patients" element={<Patients />} />
@@ -84,7 +90,7 @@ export default function AppRoutes() {
         <Route path="/admin/templates" element={<Templates />} />
         <Route path="/admin/templates/add" element={<AddTemplate />} />
         <Route path="/admin/reports" element={<Reports />} />
-        <Route path="/admin/settings" element={<Settings />} />
+        <Route path="/admin/settings" element={<GeneralSettings />} />
         <Route path="/admin/profile" element={<UserProfile />} />
         <Route path="/admin/profile/:userId" element={<UserProfile />} />
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
@@ -97,6 +103,7 @@ export default function AppRoutes() {
         <Route path="/staff/schedule" element={<StaffOPDSchedule />} />
         <Route path="/staff/print" element={<Print />} />
         <Route path="/staff/profile" element={<StaffProfile />} />
+        <Route path="/staff/settings" element={<GeneralSettings />} />
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
         <Route path="/doctor/appointments" element={<DoctorAppointments />} />
         <Route path="/doctor/patients" element={<DoctorPatients />} />
@@ -105,7 +112,9 @@ export default function AppRoutes() {
         <Route path="/doctor/prescriptions" element={<DoctorPrescriptions />} />
         <Route path="/doctor/schedule" element={<DoctorSchedule />} />
         <Route path="/doctor/followups" element={<DoctorFollowups />} />
+        <Route path="/doctor/queue" element={<DoctorTokenQueue />} />
         <Route path="/doctor/profile" element={<DoctorProfile />} />
+        <Route path="/doctor/settings" element={<GeneralSettings />} />
         <Route path="/user/dashboard" element={<UserDashboard />} />
         <Route path="/user/doctors" element={<UserDoctors />} />
         <Route path="/user/book-appointment" element={<UserBookAppointment />} />
@@ -113,7 +122,16 @@ export default function AppRoutes() {
         <Route path="/user/token-status" element={<UserTokenStatus />} />
         <Route path="/user/prescriptions" element={<UserPrescriptions />} />
         <Route path="/user/history" element={<UserHistory />} />
+        <Route path="/user/settings" element={<GeneralSettings />} />
         <Route path="/user/profile" element={<UserProfileSettings />} />
+        <Route path="/admin/notifications" element={<Notifications />} />
+        <Route path="/doctor/notifications" element={<Notifications />} />
+        <Route path="/staff/notifications" element={<Notifications />} />
+        <Route path="/user/notifications" element={<Notifications />} />
+        <Route path="/admin/feedback" element={<AdminFeedback />} />
+        <Route path="/user/feedback" element={<Feedback />} />
+        <Route path="/doctor/feedback" element={<Feedback />} />
+        <Route path="/staff/feedback" element={<Feedback />} />
       </Routes>
     </BrowserRouter>
   );

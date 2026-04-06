@@ -20,41 +20,42 @@ export default function DoctorDashboard() {
         progress: 0
     });
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            if (!user.id) return;
-            try {
-                // Fetch dynamic stats for this doctor
-                const [statsRes, queueRes] = await Promise.all([
-                    API.get(`/users/dashboard/stats?role=doctor&userId=${user.id}`),
-                    API.get(`/appointments/queue/${user.id}`)
-                ]);
+    const fetchDashboardData = async () => {
+        if (!user.id) return;
+        try {
+            // Fetch dynamic stats for this doctor
+            const [statsRes, queueRes] = await Promise.all([
+                API.get(`/users/dashboard/stats?role=doctor&userId=${user.id}`),
+                API.get(`/appointments/queue/${user.id}`)
+            ]);
 
-                if (statsRes.data.success) {
-                    const data = statsRes.data.data;
-                    setStats(prev => ({
-                        ...prev,
-                        todayAppointments: data.myAppointmentsToday || 0,
-                        completed: data.myCompleted || 0,
-                        tomorrow: data.myTomorrow || 0,
-                        totalPatients: data.myTotalPatients || 0,
-                        progress: data.myProgress || 0
-                    }));
-                }
-
-                if (queueRes.data.success) {
-                    setAppointments(queueRes.data.data || []);
-                    setStats(prev => ({
-                        ...prev,
-                        waitingPatients: (queueRes.data.data || []).filter(a => a.status === 'pending').length
-                    }));
-                }
-            } catch (error) {
-                console.error("Dashboard fetch error:", error);
-            } finally {
-                setLoading(false);
+            if (statsRes.data.success) {
+                const data = statsRes.data.data;
+                setStats(prev => ({
+                    ...prev,
+                    todayAppointments: data.myAppointmentsToday || 0,
+                    completed: data.myCompleted || 0,
+                    tomorrow: data.myTomorrow || 0,
+                    totalPatients: data.myTotalPatients || 0,
+                    progress: data.myProgress || 0
+                }));
             }
-        };
+
+            if (queueRes.data.success) {
+                setAppointments(queueRes.data.data || []);
+                setStats(prev => ({
+                    ...prev,
+                    waitingPatients: (queueRes.data.data || []).filter(a => a.status === 'pending').length
+                }));
+            }
+        } catch (error) {
+            console.error("Dashboard fetch error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchDashboardData();
     }, [user.id]);
 
@@ -75,12 +76,15 @@ export default function DoctorDashboard() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "24px" }}>
                 <DoctorAppointmentsList 
                     appointments={appointments.map(app => ({
+                        id: app.id,
                         time: app.time,
                         patient: app.Patient?.name || 'Unknown',
                         type: app.reason || "Checkup",
                         token: app.tokenNumber,
-                        status: app.status === 'pending' ? 'Waiting' : 'Checked'
+                        status: app.status || "pending",
+                        isEmergency: app.isEmergency
                     }))} 
+                    onAppointmentsChange={fetchDashboardData}
                 />
                 <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <DoctorQuickStats total={stats.totalPatients} avgTime="—" prescriptions={stats.completed} progress={stats.progress} />

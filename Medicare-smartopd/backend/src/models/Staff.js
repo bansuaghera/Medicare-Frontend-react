@@ -36,8 +36,4 @@ const Staff = sequelize.define('Staff', {
   timestamps: true
 });
 
-// Associations
-User.hasOne(Staff, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Staff.belongsTo(User, { foreignKey: 'userId' });
-
 module.exports = Staff;

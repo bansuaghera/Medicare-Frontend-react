@@ -47,8 +47,4 @@ const Patient = sequelize.define('Patient', {
   timestamps: true
 });
 
-// Associations
-User.hasOne(Patient, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Patient.belongsTo(User, { foreignKey: 'userId' });
-
 module.exports = Patient;

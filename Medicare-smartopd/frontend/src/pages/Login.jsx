@@ -3,12 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from '@react-oauth/google';
 import { Eye, EyeOff, Mail, Lock, HeartPulse, ChevronRight, Sun, Moon } from "lucide-react";
 import API from "../api/axiosConfig";
+import { useAuth } from "../context/useAuth";
 import { useTheme } from "../context/ThemeContext";
 import toast from "react-hot-toast";
 import "../styles/login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +44,7 @@ export default function Login() {
 
       if (res.data.success) {
         toast.success("Welcome back!", { id: loadToast });
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        login(res.data.user, res.data.token);
         navigate(res.data.redirectUrl || "/user/dashboard");
       }
     } catch (error) {

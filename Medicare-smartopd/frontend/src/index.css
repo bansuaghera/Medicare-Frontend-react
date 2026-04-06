@@ -1,10 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700;900&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 :root {
+  --font-main: 'Inter', sans-serif;
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f9fafb;
@@ -26,41 +30,62 @@
   --pill-orange-text: #f97316;
 
   --shadow-sm: rgba(0, 0, 0, 0.05);
-  --shadow-lg: rgba(0, 0, 0, 0.05);
+  --shadow-lg: rgba(0, 0, 0, 0.08);
+
+  /* Dynamic Primary Color */
+  --primary-color: #0fb48c;
+  --primary-color-light: #e8fdf5;
 }
 
 [data-theme="dark"] {
-  /* Premium Dark Mode Colors */
-  --bg-primary: #0b1120;       /* Very dark navy / almost black for main background */
-  --bg-secondary: #111827;     /* Deep gray/navy for cards, containers */
-  --bg-tertiary: #1f2937;      /* Hover states, minor elements */
-  --bg-quaternary: #374151;    /* Borders or active states */
-  
-  --text-primary: #f8fafc;     /* Brightest text for headings */
-  --text-secondary: #94a3b8;   /* Soft gray for standard body text */
-  --text-tertiary: #cbd5e1;    /* Intermediate text */
-  
-  --border-color: #1e293b;     /* Very subtle card borders */
-  --border-input: #334155;     /* Input fields, deeper lines */
-
-  /* High contrast pills (more vibrant against dark bg) */
-  --pill-success-bg: rgba(16, 185, 129, 0.15);
-  --pill-success-text: #10b981; 
-  --pill-info-bg: rgba(59, 130, 246, 0.15);
-  --pill-info-text: #60a5fa;
-  --pill-purple-bg: rgba(168, 85, 247, 0.15);
-  --pill-purple-text: #c084fc;
-  --pill-orange-bg: rgba(249, 115, 22, 0.15);
-  --pill-orange-text: #fb923c;
-
+  --primary-color: #0fb48c;
+  --primary-color-light: rgba(15, 180, 140, 0.15);
+  --bg-primary: #0b1120;
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1e293b;
+  --bg-quaternary: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #cbd5e1;
+  --border-color: #1e293b;
+  --border-input: #334155;
   --shadow-sm: rgba(0, 0, 0, 0.4);
-  --shadow-lg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="charcoal"] {
+  --primary-color: #0fb48c;
+  --primary-color-light: rgba(15, 180, 140, 0.1);
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2a2a2a;
+  --bg-quaternary: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-tertiary: #d1d1d1;
+  --border-color: #2c2c2c;
+  --border-input: #404040;
+  --shadow-sm: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="ocean"] {
+  --primary-color: #0284c7;
+  --primary-color-light: rgba(2, 132, 199, 0.1);
+  --bg-primary: #040d18;
+  --bg-secondary: #0a192f;
+  --bg-tertiary: #112240;
+  --bg-quaternary: #233554;
+  --text-primary: #ccd6f6;
+  --text-secondary: #8892b0;
+  --text-tertiary: #a8b2d1;
+  --border-color: #1b273b;
+  --border-input: #2d3b50;
+  --shadow-sm: rgba(0, 0, 0, 0.6);
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-primary);
@@ -68,6 +93,47 @@ body {
   transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
               color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
               border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Global Form Elements Theme Support */
+input, textarea, select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-color-light);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+button {
+  transition: all 0.2s ease;
+}
+
+/* Scrollbar Theme Support */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-quaternary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 #root {

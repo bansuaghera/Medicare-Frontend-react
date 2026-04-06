@@ -26,6 +26,29 @@ const User = sequelize.define('User', {
   role: {
     type: DataTypes.ENUM('admin', 'doctor', 'staff', 'user'),
     defaultValue: 'user'
+  },
+  settings: {
+    type: DataTypes.JSONB,
+    defaultValue: {
+      theme: 'original',
+      primaryColor: '#0fb48c',
+      fontFamily: "'Inter', sans-serif",
+      twoFactorEnabled: false,
+      loginAlerts: true,
+      dataPrivacy: 'standard'
+    }
+  },
+  profilePhoto: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  resetOtp: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  resetOtpExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   timestamps: true

@@ -83,4 +83,41 @@ const sendRegistrationEmail = async (email, name) => {
     }
 }
 
-module.exports = { sendWelcomeEmail, sendRegistrationEmail };
+const sendPasswordResetOtp = async (email, name, otp) => {
+    try {
+        const transporter = createTransporter();
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: email,
+            subject: `Password Reset OTP - ${process.env.APP_NAME || 'MediCare'}`,
+            html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border-radius: 12px; border: 1px solid #e1e8ed; overflow: hidden;">
+          <div style="background: #0fb48c; padding: 30px; text-align: center; color: #ffffff;">
+            <h1 style="margin: 0; font-size: 24px;">Password Reset</h1>
+          </div>
+          <div style="padding: 40px 32px; background: #ffffff;">
+            <p style="font-size: 16px; color: #1e293b;">Hello <b>${name}</b>,</p>
+            <p style="font-size: 16px; color: #475569; line-height: 1.6;">
+              Someone requested to reset your password. Use the OTP below to proceed. 
+              This OTP is valid for 10 minutes.
+            </p>
+            <div style="text-align: center; margin: 40px 0;">
+              <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #0fb48c; display: inline-block;">
+                ${otp}
+              </div>
+            </div>
+            <p style="font-size: 14px; color: #94a3b8;">If you didn't request this, please ignore this email.</p>
+          </div>
+          <div style="background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px;">
+            &copy; 2026 MediCare Smart OPD.
+          </div>
+        </div>`
+        };
+        await transporter.sendMail(mailOptions);
+        console.log('Password reset OTP email sent successfuly to:', email);
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+    }
+}
+
+module.exports = { sendWelcomeEmail, sendRegistrationEmail, sendPasswordResetOtp };

@@ -65,11 +65,20 @@ exports.createPrescription = async (req, res) => {
             });
         }
 
-        // Mark appointment as completed
         const appointment = await Appointment.findByPk(appointmentId);
         if (appointment) {
             appointment.status = 'completed';
             await appointment.save();
+
+            // Log activity for the patient
+            const Activity = require('../models/Activity');
+            await Activity.create({
+                userId: patientId,
+                activityType: 'prescription_created',
+                relatedEntityType: 'prescription',
+                relatedEntityId: prescription.id,
+                description: `Prescription generated for appointment on ${appointment.date}`
+            }).catch(err => console.error('Error logging prescription activity:', err));
         }
 
         res.status(201).json({ success: true, message: 'Prescription created successfully', data: prescription });

@@ -122,7 +122,7 @@ export default function Patients() {
                                                 <Link to={`/admin/profile/${patient.id}`} className="action-btn" title="View Profile">
                                                     <Eye size={18} />
                                                 </Link>
-                                                <Link to="/admin/patients/add?mode=edit" className="action-btn">
+                                                <Link to={`/admin/profile/${patient.id}?mode=edit`} className="action-btn" title="Edit Profile">
                                                     <Edit3 size={18} />
                                                 </Link>
                                                 <button 

@@ -19,7 +19,9 @@ export default function History() {
                 if (res.data.success) {
                     const allAppointments = res.data.data || [];
                     // Map all appointments as history records
-                    const mapped = allAppointments.map(app => ({
+                    const mapped = allAppointments
+                        .filter(app => ['completed', 'cancelled'].includes(app.status))
+                        .map(app => ({
                         id: app.id,
                         title: app.reason || "General Checkup",
                         doctor: app.Doctor?.name || "Unassigned",
@@ -94,7 +96,7 @@ export default function History() {
                             return (
                                 <div key={item.id} style={{ background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f3e8ff', color: '#a855f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#e8fdf5', color: '#0fb48c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             <Stethoscope size={24} />
                                         </div>
                                         <div>

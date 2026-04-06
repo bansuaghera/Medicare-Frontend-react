@@ -6,13 +6,16 @@ import {
     UserPlus,
     DollarSign,
     ArrowUpRight,
-    Plus
+    Plus,
+    Database,
+    Loader2
 } from "lucide-react";
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import { Link } from "react-router-dom";
 import API from "../../api/axiosConfig";
+import toast from "react-hot-toast";
 import "../../styles/adminDashboard.css";
 
 // Components
@@ -29,34 +32,52 @@ export default function AdminDashboard() {
     });
     const [weeklyData, setWeeklyData] = useState([]);
     const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+    const [seeding, setSeeding] = useState(false);
+
+    const fetchDashboardData = async () => {
+        try {
+            // Fetch dynamic stats from the database
+            const [statsRes, appointmentsRes] = await Promise.all([
+                API.get("/users/dashboard/stats"),
+                API.get("/appointments").catch(() => ({ data: { data: [] } }))
+            ]);
+
+            if (statsRes.data.success) {
+                const data = statsRes.data.data;
+                setStats({
+                    totalPatients: data.totalPatients,
+                    onlineDoctors: data.totalDoctors,
+                    totalAppointments: data.totalAppointments,
+                    revenueToday: data.revenueToday
+                });
+                if (data.weeklyData) setWeeklyData(data.weeklyData);
+            }
+            
+            setUpcomingAppointments(appointmentsRes.data.data?.slice(0, 5) || []);
+        } catch (error) {
+            console.error("Dashboard fetch error:", error);
+        }
+    };
 
     useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                // Fetch dynamic stats from the database
-                const [statsRes, appointmentsRes] = await Promise.all([
-                    API.get("/users/dashboard/stats"),
-                    API.get("/appointments").catch(() => ({ data: { data: [] } }))
-                ]);
-
-                if (statsRes.data.success) {
-                    const data = statsRes.data.data;
-                    setStats({
-                        totalPatients: data.totalPatients,
-                        onlineDoctors: data.totalDoctors,
-                        totalAppointments: data.totalAppointments,
-                        revenueToday: data.revenueToday
-                    });
-                    if (data.weeklyData) setWeeklyData(data.weeklyData);
-                }
-                
-                setUpcomingAppointments(appointmentsRes.data.data?.slice(0, 5) || []);
-            } catch (error) {
-                console.error("Dashboard fetch error:", error);
-            }
-        };
         fetchDashboardData();
     }, []);
+
+    const handleSeedData = async () => {
+        const loadToast = toast.loading("Populating system with demo data...");
+        setSeeding(true);
+        try {
+            const res = await API.post("/users/dashboard/seed");
+            if (res.data.success) {
+                toast.success("System populated with realistic health records!", { id: loadToast });
+                fetchDashboardData();
+            }
+        } catch (error) {
+            toast.error("Failed to seed data", { id: loadToast });
+        } finally {
+            setSeeding(false);
+        }
+    };
 
     const systemActivities = [
         { text: 'Prescription issued #9021', time: '5m ago', color: '#0fb48c' },
@@ -73,6 +94,14 @@ export default function AdminDashboard() {
                         <p style={{ color: '#64748b', fontSize: '15px' }}>Good morning, Admin. Here's what's happening today.</p>
                     </div>
                     <div style={{ display: 'flex', gap: '12px' }}>
+                        <button 
+                            onClick={handleSeedData} 
+                            disabled={seeding}
+                            style={{ background: '#fff', color: '#6366f1', border: '1px solid #6366f1', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}
+                        >
+                            {seeding ? <Loader2 className="animate-spin" size={18} /> : <Database size={18} />}
+                            Populate Demo Data
+                        </button>
                         <Link to="/admin/appointments" className="add-btn" style={{ background: '#f1f5f9', color: '#1e293b', border: '1px solid #e2e8f0' }}>
                             <CalendarCheck size={18} />
                             <span>View Schedule</span>
@@ -83,6 +112,23 @@ export default function AdminDashboard() {
                         </Link>
                     </div>
                 </div>
+
+                {stats.totalPatients === 0 && (
+                    <div style={{ background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '24px', padding: '40px', textAlign: 'center', marginBottom: '32px' }}>
+                        <div style={{ background: '#fff', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+                            <Database size={28} color="#6366f1" />
+                        </div>
+                        <h2 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 8px 0' }}>Your System is Empty</h2>
+                        <p style={{ color: '#64748b', maxWidth: '400px', margin: '0 auto 24px', fontSize: '14px' }}>Get started by populating the database with realistic medical records, doctors, and patient history for demonstration.</p>
+                        <button 
+                            onClick={handleSeedData}
+                            style={{ background: '#6366f1', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 auto' }}
+                        >
+                            <Database size={18} />
+                            Fill with Demo Data
+                        </button>
+                    </div>
+                )}
 
                 <div className="stats-grid" style={{ gap: '24px', marginBottom: '32px' }}>
                     <div className="stat-card" style={{ padding: '24px' }}>

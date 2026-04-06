@@ -44,6 +44,10 @@ const Appointment = sequelize.define('Appointment', {
     type: DataTypes.ENUM('unpaid', 'paid'),
     defaultValue: 'unpaid'
   },
+  isEmergency: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
   reason: {
     type: DataTypes.TEXT,
     allowNull: true

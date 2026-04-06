@@ -1,21 +1,48 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
     ShieldCheck,
     MoveLeft,
     Sun,
-    Moon
+    Moon,
+    Loader2
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import API from "../api/axiosConfig";
+import toast from "react-hot-toast";
 import "../styles/verifyOTP.css";
 
 export default function VerifyOTP() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { isDarkMode, toggleTheme } = useTheme();
+    const [otp, setOtp] = useState("");
+    const [loading, setLoading] = useState(false);
+    
+    // Retrieve email from state passed from ForgotPassword
+    const email = location.state?.email;
 
-    const handleVerify = (e) => {
+    const handleVerify = async (e) => {
         e.preventDefault();
-        alert("OTP Verified Successfully!");
-        navigate("/login");
+        if (!otp || !email) {
+            toast.error("Email session missing or OTP empty");
+            return;
+        }
+
+        setLoading(true);
+        const loadToast = toast.loading("Verifying OTP...");
+        try {
+            const res = await API.post("/users/verify-otp", { email, otp });
+            if (res.data.success) {
+                toast.success("OTP Verified Successfully!", { id: loadToast });
+                // Pass email and otp to ResetPassword
+                navigate("/reset-password", { state: { email, otp } });
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Invalid OTP", { id: loadToast });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -52,7 +79,7 @@ export default function VerifyOTP() {
                 <div className="left-content">
                     <h1>Verify Your OTP</h1>
                     <p>
-                        We've sent a 6-digit verification code to your email. Please enter it below to continue.
+                        We've sent a 6-digit verification code to <b>{email || "your email"}</b>. Please enter it below to continue.
                     </p>
                 </div>
             </div>
@@ -77,14 +104,21 @@ export default function VerifyOTP() {
                                 className="otp-input"
                                 placeholder="------"
                                 maxLength="6"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
                                 required
                             />
                         </div>
 
-                        <button type="submit" className="verify-btn">
-                            Verify OTP
+                        <button type="submit" className="verify-btn" disabled={loading}>
+                            {loading && <Loader2 className="animate-spin" size={18} style={{ marginRight: "8px" }} />}
+                            {loading ? "Verifying..." : "Verify OTP"}
                         </button>
                     </form>
+
+                    <Link to="/forgot-password" style={{ display: "block", marginTop: "16px", color: "#64748b", textDecoration: "none", fontSize: "14px" }}>
+                        Didn't get the code? Resend
+                    </Link>
 
                     <Link to="/login" className="back-to-login">
                         <MoveLeft size={18} />

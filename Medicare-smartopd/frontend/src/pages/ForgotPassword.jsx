@@ -1,22 +1,42 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
     Mail,
     Send,
     MoveLeft,
     Sun,
-    Moon
+    Moon,
+    Loader2
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import API from "../api/axiosConfig";
+import toast from "react-hot-toast";
 import "../styles/forgotPassword.css";
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useTheme();
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert("Reset link sent to your email!");
-        navigate("/verify-otp");
+        if (!email) return;
+
+        setLoading(true);
+        const loadToast = toast.loading("Sending OTP to your email...");
+        try {
+            const res = await API.post("/users/forgot-password", { email });
+            if (res.data.success) {
+                toast.success("OTP sent successfully!", { id: loadToast });
+                // Pass email to next page so we know which account to verify
+                navigate("/verify-otp", { state: { email } });
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to send OTP", { id: loadToast });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -53,13 +73,13 @@ export default function ForgotPassword() {
                 <div className="left-content">
                     <h1>Don't Worry!</h1>
                     <p>
-                        Forgot your password? No problem! We'll send you a reset link to get you back into your
+                        Forgot your password? No problem! We'll send you a verification code to get you back into your
                         account quickly and securely.
                     </p>
 
                     <ul className="steps-list">
                         <li>1. Enter your email</li>
-                        <li>2. Check your inbox</li>
+                        <li>2. Verify with OTP</li>
                         <li>3. Create new password</li>
                     </ul>
                 </div>
@@ -75,18 +95,24 @@ export default function ForgotPassword() {
 
                     <h2>Forgot Password?</h2>
                     <p className="subtitle">
-                        Enter your email address and we'll send instructions to reset your password.
+                        Enter your email address and we'll send a 6-digit OTP to reset your password.
                     </p>
 
                     <form className="forgot-form" onSubmit={handleSubmit}>
                         <div className="input-group">
                             <label>Email Address</label>
-                            <input type="email" placeholder="Enter your email" required />
+                            <input 
+                                type="email" 
+                                placeholder="Enter your registered email" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required 
+                            />
                         </div>
 
-                        <button type="submit" className="reset-btn">
-                            <Send size={18} />
-                            <span>Send Reset Link</span>
+                        <button type="submit" className="reset-btn" disabled={loading}>
+                            {loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
+                            <span>{loading ? "Sending..." : "Send OTP"}</span>
                         </button>
                     </form>
 

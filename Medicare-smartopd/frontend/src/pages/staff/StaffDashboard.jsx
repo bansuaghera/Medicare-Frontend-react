@@ -5,6 +5,7 @@ import API from "../../api/axiosConfig";
 import StatCard from "../../components/common/StatCard";
 import StaffQuickActions from "../../components/staff/StaffQuickActions";
 import TodayAppointments from "../../components/staff/TodayAppointments";
+import toast from "react-hot-toast";
 
 export default function StaffDashboard() {
     const [appointments, setAppointments] = useState([]);
@@ -16,37 +17,53 @@ export default function StaffDashboard() {
         scheduledTomorrow: 0
     });
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                const [statsRes, appointmentsRes] = await Promise.all([
-                    API.get("/users/dashboard/stats"),
-                    API.get("/appointments")
-                ]);
+    const handleStatusUpdate = async (id, status) => {
+        try {
+            await API.put(`/appointments/${id}/status`, { status });
+            setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
+            toast.success(`Status updated to ${status}`);
+            setStats(prev => ({
+                ...prev,
+                activeTokens: prev.activeTokens + (status === 'pending' ? 1 : status === 'completed' ? -1 : 0)
+            }));
+        } catch (error) {
+            console.error('Failed to update appointment status', error);
+            toast.error('Failed to update appointment status');
+        }
+    };
 
-                if (statsRes.data.success) {
-                    const data = statsRes.data.data;
-                    setStats(prev => ({
-                        ...prev,
-                        todayAppointments: data.totalAppointments || 0,
-                        newPatients: data.totalPatients || 0,
-                        scheduledTomorrow: 0
-                    }));
-                }
+    const fetchDashboardData = async () => {
+        try {
+            const [statsRes, appointmentsRes] = await Promise.all([
+                API.get("/users/dashboard/stats"),
+                API.get("/appointments")
+            ]);
 
-                if (appointmentsRes.data.success) {
-                    setAppointments(appointmentsRes.data.data || []);
-                    setStats(prev => ({
-                        ...prev,
-                        activeTokens: (appointmentsRes.data.data || []).filter(a => a.status === 'pending').length
-                    }));
-                }
-            } catch (error) {
-                console.error("Dashboard fetch error:", error);
-            } finally {
-                setLoading(false);
+            if (statsRes.data.success) {
+                const data = statsRes.data.data;
+                setStats(prev => ({
+                    ...prev,
+                    todayAppointments: data.totalAppointments || 0,
+                    newPatients: data.totalPatients || 0,
+                    scheduledTomorrow: 0
+                }));
             }
-        };
+
+            if (appointmentsRes.data.success) {
+                setAppointments(appointmentsRes.data.data || []);
+                setStats(prev => ({
+                    ...prev,
+                    activeTokens: (appointmentsRes.data.data || []).filter(a => a.status === 'pending').length
+                }));
+            }
+        } catch (error) {
+            console.error("Dashboard fetch error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchDashboardData();
     }, []);
 
@@ -66,12 +83,19 @@ export default function StaffDashboard() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>
                 <StaffQuickActions />
-                <TodayAppointments appointments={appointments.map(app => ({
-                    time: app.time,
-                    patient: app.Patient?.name || 'Unknown',
-                    doctor: app.Doctor?.name || 'Assigning...',
-                    token: app.tokenNumber
-                }))} />
+                <TodayAppointments
+                    appointments={appointments.map(app => ({
+                        id: app.id,
+                        time: app.time,
+                        patient: app.Patient?.name || 'Unknown',
+                        doctor: app.Doctor?.name || 'Assigning...',
+                        token: app.tokenNumber,
+                        status: app.status || 'pending'
+                    }))}
+                    onStatusChange={handleStatusUpdate}
+                    onAppointmentsChange={fetchDashboardData}
+                    enableStatusEdit={true}
+                />
             </div>
         </StaffLayout>
     );

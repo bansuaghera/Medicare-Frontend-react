@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     HeartPulse,
     LayoutDashboard,
@@ -10,21 +11,66 @@ import {
     CheckCircle,
     LogOut,
     Search,
-    Bell
+    Bell,
+    MessageSquare,
+    Settings
 } from "lucide-react";
+import { useAuth } from "../context/useAuth";
+import Avatar from "../components/common/Avatar";
+import { logActivity, getUnreadNotificationsCount } from "../api/activityAPI";
 import "../styles/adminLayout.css";
 
 export default function DoctorLayout({ children, panelTitle = "Doctor Panel" }) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            if (user?.id) {
+                try {
+                    const data = await getUnreadNotificationsCount(user.id);
+                    if (data?.success) {
+                        setUnreadCount(data.unreadCount);
+                    }
+                } catch (error) {
+                    console.error("Error fetching unread count", error);
+                }
+            }
+        };
+
+        fetchUnreadCount();
+        const interval = setInterval(fetchUnreadCount, 60000);
+        return () => clearInterval(interval);
+    }, [user?.id, location.pathname]);
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+        if (currentUser) {
+            await logActivity({
+                userId: currentUser.id,
+                activityType: "logout",
+                description: `${currentUser.name} logged out`
+            }).catch(() => {});
+        }
+        localStorage.removeItem("user");
+        navigate("/login");
+    };
 
     const menuItems = [
         { icon: <LayoutDashboard size={20} />, label: "Dashboard", path: "/doctor/dashboard" },
+        { icon: <Clock size={20} />, label: "Token Queue", path: "/doctor/queue" },
         { icon: <CalendarDays size={20} />, label: "Appointments", path: "/doctor/appointments" },
         { icon: <Users size={20} />, label: "Patients", path: "/doctor/patients" },
         { icon: <Stethoscope size={20} />, label: "Examination", path: "/doctor/examination" },
         { icon: <FileText size={20} />, label: "Prescriptions", path: "/doctor/prescriptions" },
+        { icon: <Bell size={20} />, label: "Notifications", path: "/doctor/notifications" },
         { icon: <Clock size={20} />, label: "Schedule", path: "/doctor/schedule" },
         { icon: <CheckCircle size={20} />, label: "Follow-ups", path: "/doctor/followups" },
+        { icon: <MessageSquare size={20} />, label: "Feedback", path: "/doctor/feedback" },
+        { icon: <Settings size={20} />, label: "Settings", path: "/doctor/settings" },
     ];
 
     return (
@@ -38,6 +84,16 @@ export default function DoctorLayout({ children, panelTitle = "Doctor Panel" }) 
                     <div className="sidebar-brand">
                         <h3>MediCare</h3>
                         <span>{panelTitle}</span>
+                    </div>
+                </div>
+
+                {/* Profile Card in Sidebar */}
+                <div className="sidebar-profile-card">
+                    <Avatar user={user} size={48} />
+                    <div className="profile-info">
+                        <p className="profile-name">{user?.name || "Doctor"}</p>
+                        <p className="profile-email">{user?.email || "doc@medicare.com"}</p>
+                        <span className="user-role-badge">Doctor</span>
                     </div>
                 </div>
 
@@ -55,10 +111,10 @@ export default function DoctorLayout({ children, panelTitle = "Doctor Panel" }) 
                 </nav>
 
                 <div className="sidebar-footer">
-                    <Link to="/login" className="logout-btn">
+                    <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}>
                         <LogOut size={20} />
                         <span>Logout</span>
-                    </Link>
+                    </button>
                 </div>
             </aside>
 
@@ -66,18 +122,14 @@ export default function DoctorLayout({ children, panelTitle = "Doctor Panel" }) 
             <main className="main-content">
                 {/* HEADER */}
                 <header className="dashboard-header">
-                    <div className="search-bar">
-                        <Search size={18} className="text-muted" />
-                        <input type="text" placeholder="Search patients, appointments..." />
-                    </div>
 
                     <div className="header-actions">
-                        <button className="notification-btn">
+                        <Link to="/doctor/notifications" className="notification-btn" style={{ textDecoration: 'none' }}>
                             <Bell size={22} />
-                            <span className="notif-badge"></span>
-                        </button>
+                            {unreadCount > 0 && <span className="notif-badge"></span>}
+                        </Link>
                         <Link to="/doctor/profile" className="user-profile" style={{ textDecoration: 'none' }}>
-                            <div className="user-avatar" style={{ backgroundColor: '#0fb48c' }}>DR</div>
+                            <Avatar user={user} size={36} />
                         </Link>
                     </div>
                 </header>

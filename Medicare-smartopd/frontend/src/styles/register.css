@@ -4,19 +4,20 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .register-container {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--bg-primary);
 }
 
 /* LEFT SIDE */
 .left-section {
   flex: 1.2;
-  background: linear-gradient(135deg, #0fb48c 0%, #089d7d 100%);
+  background: var(--primary-color);
   color: white;
   padding: 60px 80px;
   position: relative;
@@ -49,7 +50,7 @@
 }
 
 .brand-icon-svg {
-  color: #0fb48c;
+  color: var(--primary-color);
   width: 28px;
   height: 28px;
 }
@@ -58,6 +59,7 @@
   font-size: 22px;
   font-weight: 700;
   line-height: 1.2;
+  color: white;
 }
 
 .brand-text span {
@@ -69,7 +71,6 @@
 .left-content {
   z-index: 2;
   margin-top: 60px;
-  /* Added space to prevent brand logo overlap */
 }
 
 .left-content h1 {
@@ -88,10 +89,6 @@
   max-width: 450px;
 }
 
-.benefits-list {
-  list-style: none;
-}
-
 .benefits-list li {
   display: flex;
   align-items: center;
@@ -101,37 +98,10 @@
   font-weight: 500;
 }
 
-.check-icon {
-  width: 22px;
-  height: 22px;
-  opacity: 0.8;
-}
-
-/* Decoration */
-.decoration-circle {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 50%;
-}
-
-.circle-1 {
-  width: 500px;
-  height: 500px;
-  top: -150px;
-  left: -100px;
-}
-
-.circle-2 {
-  width: 700px;
-  height: 700px;
-  bottom: -300px;
-  right: -200px;
-}
-
 /* RIGHT SIDE */
 .right-section {
   flex: 1.5;
-  background: var(--bg-primary, #f8fafc);
+  background: var(--bg-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -141,39 +111,30 @@
   transition: background-color 0.4s ease;
 }
 
-.top-logo {
-  margin-bottom: 30px;
-}
-
-.top-logo img {
-  width: 240px;
-  height: auto;
-}
-
 /* CARD */
 .register-card {
   width: 100%;
   max-width: 520px;
-  background: var(--bg-secondary, white);
+  background: var(--bg-secondary);
   padding: 40px 50px;
   border-radius: 24px;
-  box-shadow: 0 4px 6px -1px var(--shadow-sm, rgba(0, 0, 0, 0.05)), 0 20px 25px -5px var(--shadow-lg, rgba(0, 0, 0, 0.05));
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.02));
-  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s ease;
 }
 
 .register-card h2 {
   text-align: center;
   font-size: 32px;
   font-weight: 700;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--text-primary);
   margin-bottom: 10px;
 }
 
 .subtitle {
   text-align: center;
   font-size: 15px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary);
   margin-bottom: 35px;
 }
 
@@ -196,10 +157,9 @@
 .input-icon {
   position: absolute;
   left: 24px;
-  /* Moved slightly further from the edge */
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: var(--text-secondary);
   width: 18px;
   height: 18px;
   pointer-events: none;
@@ -208,35 +168,19 @@
 .input-with-icon input {
   width: 100%;
   padding: 16px 16px 16px 65px !important;
-  /* Forced padding to prevent overrides */
   border-radius: 12px;
-  border: 1px solid var(--border-color, transparent);
-  background: var(--bg-primary, #f1f5f9);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
   font-size: 15px;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
   transition: all 0.3s ease;
 }
 
-/* Hide Default Browsers Eye Icons */
-.input-with-icon input::-ms-reveal,
-.input-with-icon input::-ms-clear,
-.input-with-icon input::-webkit-password-reveal-button {
-  display: none !important;
-}
-
 .input-with-icon input:focus {
-  background: white;
-  border-color: #0fb48c;
-  box-shadow: 0 0 0 4px rgba(15, 180, 140, 0.1);
+  background: var(--bg-secondary);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px var(--primary-color-light);
   outline: none;
-}
-
-.error-text {
-  color: #ef4444;
-  font-size: 11px;
-  margin-top: 5px;
-  font-weight: 500;
-  display: block;
 }
 
 .terms {
@@ -245,18 +189,18 @@
   gap: 10px;
   margin: 10px 0;
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .terms input {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #0fb48c;
+  accent-color: var(--primary-color);
 }
 
 .terms a {
-  color: #0fb48c;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
 }
@@ -266,48 +210,33 @@
   padding: 16px;
   border-radius: 12px;
   border: none;
-  background: #0fb48c;
+  background: var(--primary-color);
   color: white;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(15, 180, 140, 0.2);
+  box-shadow: 0 10px 20px var(--primary-color-light);
   transition: all 0.3s ease;
   margin-top: 10px;
 }
 
 .register-btn:hover {
-  background: #0d9d7a;
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(15, 180, 140, 0.3);
+  box-shadow: 0 12px 24px var(--primary-color-light);
 }
 
 .login-link {
   text-align: center;
   margin-top: 25px;
   font-size: 15px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .login-link a {
-  color: #0fb48c;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 700;
   margin-left: 5px;
-}
-
-/* FOOTER */
-.support-footer {
-  margin-top: 40px;
-  font-size: 14px;
-  color: #64748b;
-  text-align: center;
-}
-
-.support-footer a {
-  color: #0fb48c;
-  text-decoration: none;
-  font-weight: 500;
 }
 
 /* HELP BUTTON */
@@ -317,7 +246,7 @@
   right: 30px;
   width: 56px;
   height: 56px;
-  background: #0fb48c;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 50%;
@@ -325,16 +254,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 8px 16px rgba(15, 180, 140, 0.3);
+  box-shadow: 0 8px 16px var(--primary-color-light);
   transition: all 0.3s ease;
 }
 
 .floating-help-btn:hover {
   transform: scale(1.1);
-  background: #0d9d7a;
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .left-section {
     display: none;

@@ -2,9 +2,15 @@ const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const Patient = require('../models/Patient');
 const Staff = require('../models/Staff');
+const Activity = require('../models/Activity');
 const { sequelize } = require('../config/db');
-const { sendWelcomeEmail, sendRegistrationEmail } = require('../utils/mailSender');
+const { sendWelcomeEmail, sendRegistrationEmail, sendPasswordResetOtp } = require('../utils/mailSender');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+};
 
 // Password validation helper
 const validatePassword = (password) => {
@@ -43,6 +49,7 @@ exports.registerUser = async (req, res) => {
     if (role === 'doctor') {
       await Doctor.create({
         userId: user.id,
+        name: name,
         specialization: extra.specialization || 'General',
         licenseNumber: extra.licenseNumber || null,
         phone: extra.phone || null,
@@ -128,6 +135,13 @@ exports.loginUser = async (req, res) => {
 
     console.log(`Login successful for ${email}, Role: ${user.role}`);
 
+    // Log login activity
+    await Activity.create({
+      userId: user.id,
+      activityType: 'login',
+      description: `${user.name} logged in as ${user.role}`
+    }).catch(err => console.error('Error logging login activity:', err));
+
     const roleRoutes = {
       admin: "/admin/dashboard",
       doctor: "/doctor/dashboard",
@@ -138,14 +152,101 @@ exports.loginUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Login successful',
+      token: generateToken(user.id),
       redirectUrl: roleRoutes[user.role],
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        settings: user.settings,
+        profilePhoto: user.profilePhoto
       }
     });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc Forgot password - Send OTP
+// @route POST /api/users/forgot-password
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ where: { email } });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'No account found with this email' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    user.resetOtp = otp;
+    user.resetOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+
+    await sendPasswordResetOtp(user.email, user.name, otp);
+
+    res.status(200).json({ success: true, message: 'OTP sent to your email' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc Verify OTP
+// @route POST /api/users/verify-otp
+exports.verifyResetOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const { Op } = require('sequelize');
+    
+    const user = await User.findOne({ 
+      where: { 
+        email,
+        resetOtp: otp,
+        resetOtpExpiry: { [Op.gt]: new Date() }
+      } 
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    res.status(200).json({ success: true, message: 'OTP verified successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc Reset Password
+// @route POST /api/users/reset-password
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, password } = req.body;
+    const { Op } = require('sequelize');
+
+    if (!validatePassword(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one capital letter and one number.' });
+    }
+
+    const user = await User.findOne({ 
+      where: { 
+        email,
+        resetOtp: otp,
+        resetOtpExpiry: { [Op.gt]: new Date() }
+      } 
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid session or session expired. Please request a new OTP.' });
+    }
+
+    user.password = password; 
+    user.resetOtp = null;
+    user.resetOtpExpiry = null;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Password reset successfully. You can now login.' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -165,6 +266,40 @@ exports.getUsers = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// @desc Get a single user by ID
+// @route GET /api/users/:id
+// @access Private/Admin
+exports.getUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id, {
+            include: [
+                { model: Doctor, required: false },
+                { model: Patient, required: false },
+                { model: Staff, required: false }
+            ]
+        });
+
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: user
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error', 
+            error: error.message 
+        });
     }
 };
 
@@ -224,7 +359,7 @@ exports.getStaff = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, role } = req.body;
+    const { name, email, role, phone, dob, gender, bloodGroup, address, medicalHistory, profilePhoto } = req.body;
 
     const user = await User.findByPk(id);
     if (!user) {
@@ -234,8 +369,46 @@ exports.updateUser = async (req, res) => {
     user.name = name || user.name;
     user.email = email || user.email;
     user.role = role || user.role;
+    if (profilePhoto !== undefined) user.profilePhoto = profilePhoto;
 
     await user.save();
+
+    // If user is a doctor and name was updated, update the doctor record too
+    if (user.role === 'doctor' && name) {
+      await Doctor.update(
+        { name: name },
+        { where: { userId: id } }
+      );
+    }
+
+    // If user is a user/patient, update their patient record
+    if (user.role === 'user') {
+      const patientUpdates = {};
+      if (phone !== undefined) patientUpdates.phone = phone;
+      if (dob !== undefined) patientUpdates.dob = dob;
+      if (gender !== undefined) patientUpdates.gender = gender;
+      if (bloodGroup !== undefined) patientUpdates.bloodGroup = bloodGroup;
+      if (address !== undefined) patientUpdates.address = address;
+      if (medicalHistory !== undefined) patientUpdates.medicalHistory = medicalHistory;
+
+      if (Object.keys(patientUpdates).length > 0) {
+        const [patient, created] = await Patient.findOrCreate({
+          where: { userId: id },
+          defaults: { gender: 'other', ...patientUpdates, age: 0 }
+        });
+        
+        if (!created) {
+          await Patient.update(patientUpdates, { where: { userId: id } });
+        }
+      }
+    }
+
+    // Capture activity for profile edit
+    await Activity.create({
+      userId: user.id,
+      activityType: 'profile_updated',
+      description: `${user.name} updated their profile settings`
+    }).catch(console.error);
 
     res.status(200).json({ success: true, message: 'User updated successfully', data: user });
   } catch (error) {
@@ -317,20 +490,239 @@ exports.getDashboardStats = async (req, res) => {
             // Progress: completed vs total today
             stats.myProgress = myToday > 0 ? Math.round((myCompleted / myToday) * 100) : 0;
         } else if (role === 'user' && userId) {
-            const myAppointments = await Appointment.findAll({
-                where: { patientId: userId },
-                order: [['date', 'DESC']],
-                limit: 1
-            }).catch(() => []);
-            stats.myUpcomingAppointments = await Appointment.count({ where: { patientId: userId } }).catch(() => 0);
-            stats.myPrescriptionsCount = 0;
-            stats.lastVisit = myAppointments.length > 0 ? myAppointments[0].date : null;
+            const Prescription = require('../models/Prescription');
+            const Patient = require('../models/Patient');
+            
+            const [upcoming, totalVisits, prescriptionCount, myLastVisit, latestP, patientData] = await Promise.all([
+                Appointment.count({ where: { patientId: userId, status: 'pending' } }).catch(() => 0),
+                Appointment.count({ where: { patientId: userId, status: 'completed' } }).catch(() => 0),
+                Prescription.count({ where: { patientId: userId } }).catch(() => 0),
+                Appointment.findOne({
+                    where: { patientId: userId, status: 'completed' },
+                    order: [['date', 'DESC']]
+                }).catch(() => null),
+                Prescription.findOne({
+                    where: { patientId: userId },
+                    order: [['createdAt', 'DESC']]
+                }).catch(() => null),
+                Patient.findOne({ where: { userId } }).catch(() => null)
+            ]);
+
+            stats.myUpcomingAppointments = upcoming;
+            stats.myTotalVisits = totalVisits;
+            stats.myPrescriptionsCount = prescriptionCount;
+            stats.lastVisit = myLastVisit ? myLastVisit.date : null;
+            stats.bloodGroup = patientData ? patientData.bloodGroup : '---';
+            stats.medicalHistory = patientData ? patientData.medicalHistory : '---';
+            
+            // Latest summary
+            stats.latestVitals = latestP ? latestP.vitals : null;
+            stats.latestMedicines = latestP ? latestP.medicines : [];
+            stats.latestDiagnosis = latestP ? latestP.diagnosis : null;
         }
 
         res.status(200).json({ success: true, data: stats });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to fetch stats', error: error.message });
     }
+};
+// @desc Delete multiple users
+// @route DELETE /api/users/bulk
+exports.deleteMultipleUsers = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'No user IDs provided' });
+    }
+    await User.destroy({ where: { id: ids } });
+    res.status(200).json({ success: true, message: `${ids.length} users deleted successfully` });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc Delete all users
+// @route DELETE /api/users/clear-all
+exports.deleteAllUsers = async (req, res) => {
+  try {
+    const { excludeId } = req.body;
+    const { Op } = require('sequelize');
+    const condition = excludeId ? { id: { [Op.ne]: excludeId } } : {};
+    
+    await User.destroy({ where: condition });
+    res.status(200).json({ success: true, message: 'All requested users deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+
+// @desc Seed system demo data
+// @route POST /api/users/dashboard/seed
+exports.seedSystemData = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const Appointment = require('../models/Appointment');
+    const Prescription = require('../models/Prescription');
+
+    // 1. Create Doctors if total < 5
+    const docCount = await User.count({ where: { role: 'doctor' } });
+    const doctorNames = ["Dr. Sarah Johnson", "Dr. Robert Smith", "Dr. Emily Chen", "Dr. Michael Ross", "Dr. David Williams"];
+    const specializations = ["Cardiology", "Neurology", "Orthopedics", "Pediatrics", "Dermatology"];
+    
+    let doctors = [];
+    if (docCount < 5) {
+      for (let i = 0; i < 5; i++) {
+        const u = await User.create({
+          name: doctorNames[i],
+          email: `doc${i}@medicare.com`,
+          password: 'Password123',
+          role: 'doctor'
+        }, { transaction });
+        
+        const d = await Doctor.create({
+          userId: u.id,
+          name: u.name,
+          specialization: specializations[i],
+          licenseNumber: `MED-${Math.floor(1000 + Math.random() * 9000)}`,
+          phone: `98765${i}1234`,
+          experienceYears: 5 + i,
+          opdFees: 500 + (i * 100)
+        }, { transaction });
+        doctors.push(u.id);
+      }
+    } else {
+      const existingDocs = await User.findAll({ where: { role: 'doctor' }, limit: 5 });
+      doctors = existingDocs.map(d => d.id);
+    }
+
+    // 2. Create Patients if count < 10
+    const patientCount = await User.count({ where: { role: 'user' } });
+    let patients = [];
+    if (patientCount < 10) {
+      const patientNames = ["Amit Kumar", "Priya Singh", "Rohit Vyas", "Sneha Patil", "John Doe", "Jane Smith", "Vikram Rathore", "Ananya Iyer", "Karan Mehra", "Sonia Gandhi"];
+      for (let i = 0; i < 10; i++) {
+        const u = await User.create({
+          name: patientNames[i],
+          email: `patient${i}@demo.com`,
+          password: 'Password123',
+          role: 'user'
+        }, { transaction });
+        
+        await Patient.create({
+          userId: u.id,
+          age: 20 + i,
+          gender: i % 2 === 0 ? 'male' : 'female',
+          phone: `91234${i}5678`,
+          bloodGroup: ['A+', 'O+', 'B+', 'AB+'][i % 4],
+          address: 'Demo Address, City',
+          medicalHistory: i % 3 === 0 ? 'Normal' : 'Allergies'
+        }, { transaction });
+        patients.push(u.id);
+      }
+    } else {
+      const existingPatients = await User.findAll({ where: { role: 'user' }, limit: 10 });
+      patients = existingPatients.map(p => p.id);
+    }
+
+    // 3. Create Appointments for the last 7 days + next 3 days
+    const apptCount = await Appointment.count();
+    if (apptCount < 20) {
+      const statuses = ['completed', 'pending', 'cancelled'];
+      for (let i = -7; i <= 3; i++) {
+        const date = new Date(Date.now() + i * 86400000).toISOString().split('T')[0];
+        // Create 2-3 appts per day
+        for (let j = 0; j < 3; j++) {
+            const pId = patients[Math.floor(Math.random() * patients.length)];
+            const dId = doctors[Math.floor(Math.random() * doctors.length)];
+            const status = i < 0 ? 'completed' : (i === 0 ? 'pending' : 'pending');
+            
+            const appt = await Appointment.create({
+                patientId: pId,
+                doctorId: dId,
+                date,
+                time: `${9 + j}:30:00`,
+                tokenNumber: j + 1,
+                status: status,
+                reason: "Regular Health Checkup"
+            }, { transaction });
+
+            if (status === 'completed') {
+                await Prescription.create({
+                    appointmentId: appt.id,
+                    patientId: pId,
+                    doctorId: dId,
+                    diagnosis: "Seasonal viral fever & mild dehydration",
+                    advice: "Take rest and drink plenty of water.",
+                    vitals: { heartRate: "80 bpm", bp: "120/80", temp: "101.2 F", weight: "65 kg" },
+                    medicines: [
+                        { name: "Paracetamol", dosage: "500 mg", frequency: "BD", duration: "3 days" },
+                        { name: "Vitamin C", dosage: "500 mg", frequency: "OD", duration: "7 days" }
+                    ]
+                }, { transaction });
+            }
+        }
+      }
+    }
+
+    await transaction.commit();
+    res.status(200).json({ success: true, message: 'System demo data seeded successfully' });
+  } catch (error) {
+    if (transaction) await transaction.rollback();
+    res.status(500).json({ success: false, message: 'Seeding failed', error: error.message });
+  }
+};
+
+// @desc Get user settings
+// @route GET /api/users/:id/settings
+exports.getUserSettings = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json({ success: true, data: user.settings || {} });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// @desc Get current user profile
+// @route GET /api/users/me
+// @access Private
+exports.getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] }
+    });
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      data: user 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// @desc Update user settings
+// @route PUT /api/users/:id/settings
+exports.updateUserSettings = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    // Merge existing settings with new ones
+    const newSettings = { ...(user.settings || {}), ...req.body };
+    user.settings = newSettings;
+    await user.save();
+    
+    res.status(200).json({ success: true, message: 'Settings saved', data: user.settings });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
 
 module.exports = {

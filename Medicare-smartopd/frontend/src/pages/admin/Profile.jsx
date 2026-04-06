@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import {
     User,
@@ -13,23 +13,38 @@ import {
     Award,
     Clock,
     ChevronLeft,
-    Stethoscope
+    Stethoscope,
+    Save,
+    X
 } from "lucide-react";
+import ProfilePictureUpload from "../../components/common/ProfilePictureUpload";
 import API from "../../api/axiosConfig";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/useAuth";
 import "../../styles/patients.css";
 
 export default function UserProfile() {
-    const { userId } = useParams();
+    const { user: currentUser } = useAuth();
+    const { userId: paramUserId } = useParams();
+    const userId = paramUserId || currentUser?.id;
+    const [searchParams] = useSearchParams();
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(userId ? true : false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isEditing, setIsEditing] = useState(searchParams.get('mode') === 'edit');
+    const [formData, setFormData] = useState({});
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (userId) {
             fetchUserProfile();
         }
     }, [userId]);
+
+    useEffect(() => {
+        // Update edit mode based on query parameter
+        setIsEditing(searchParams.get('mode') === 'edit');
+    }, [searchParams]);
 
     const fetchUserProfile = async () => {
         try {
@@ -61,20 +76,30 @@ export default function UserProfile() {
                 } else if (userData.Staff) {
                     role = "Staff";
                     profileData = {
-                        designation: userData.Staff.designation,
-                        phone: userData.Staff.phone
+                        designation: userData.Staff.staffRole,
+                        phone: userData.Staff.phone,
+                        department: userData.Staff.department
+                    };
+                } else if (userData.role === 'admin') {
+                    role = "Administrator";
+                    profileData = {
+                        phone: userData.phone || "N/A",
+                        status: "System Admin"
                     };
                 }
 
-                setUser({
+                const userObj = {
                     id: userData.id,
                     name: userData.name,
                     email: userData.email,
                     role: role,
                     ...profileData,
                     status: "Active",
-                    joinDate: userData.createdAt?.split("T")[0] || "N/A"
-                });
+                    joinDate: userData.createdAt?.split("T")[0] || "N/A",
+                    profilePhoto: userData.profilePhoto || null
+                };
+                setUser(userObj);
+                setFormData(userObj);
             }
         } catch (err) {
             console.error("Error fetching user profile:", err);
@@ -85,25 +110,53 @@ export default function UserProfile() {
         }
     };
 
-    // Mock data for demonstration when no userId is provided
-    const defaultUser = {
-        name: "Rahul Verma",
-        role: "Patient",
-        email: "rahul.v@example.com",
-        phone: "+91 98765 00001",
-        address: "123 Swasthya Kendra, New Delhi",
-        dob: "1990-05-15",
-        joinDate: "2023-10-12",
-        id: "MED-90210",
-        gender: "Male",
-        bloodGroup: "O+",
-        status: "Active",
-        specialty: null,
-        experienceYears: null,
-        age: null
+    const handleInputChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
 
-    const displayUser = user || defaultUser;
+    const handlePhotoSave = async (newPhoto) => {
+        setFormData(prev => ({ ...prev, profilePhoto: newPhoto }));
+        try {
+            await API.put(`/users/${userId}`, { profilePhoto: newPhoto });
+            // If viewing self, update local storage
+            const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+            if (currentUser.id === userId) {
+                const updatedUser = { ...currentUser, profilePhoto: newPhoto };
+                localStorage.setItem("user", JSON.stringify(updatedUser));
+            }
+            toast.success("Profile photo updated successfully");
+        } catch (err) {
+            toast.error("Failed to save profile photo");
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            setSaving(true);
+            const res = await API.put(`/users/${userId}`, {
+                name: formData.name,
+                email: formData.email
+            });
+            if (res.data.success) {
+                setUser(formData);
+                setIsEditing(false);
+                toast.success("Profile updated successfully!");
+            }
+        } catch (err) {
+            console.error("Error updating profile:", err);
+            toast.error(err.response?.data?.message || "Failed to update profile");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setFormData(user);
+        setIsEditing(false);
+    };
 
     if (loading) {
         return (
@@ -118,18 +171,20 @@ export default function UserProfile() {
         );
     }
 
-    if (error && userId) {
+    if (error || !user) {
         return (
             <AdminLayout panelTitle="Admin Panel">
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
                     <div style={{ textAlign: 'center', color: '#d32f2f' }}>
                         <div style={{ fontSize: '20px', marginBottom: '16px' }}>Error</div>
-                        <p>{error}</p>
+                        <p>{error || "No profile data found"}</p>
                     </div>
                 </div>
             </AdminLayout>
         );
     }
+
+    const displayFormData = Object.keys(formData).length > 0 ? formData : user;
 
     return (
         <AdminLayout panelTitle="Admin Panel">
@@ -145,13 +200,59 @@ export default function UserProfile() {
 
                 <div className="page-header">
                     <div className="page-title">
-                        <h1>Profile Information</h1>
-                        <p>View detailed information for {displayUser.name}</p>
+                        <h1>{isEditing ? "Edit Profile" : "Profile Information"}</h1>
+                        <p>{isEditing ? "Update user details" : `View detailed information for ${displayFormData.name}`}</p>
                     </div>
-                    <button className="add-btn">
-                        <Edit3 size={18} />
-                        <span>Edit Profile</span>
-                    </button>
+                    {!isEditing ? (
+                        <button 
+                            onClick={() => setIsEditing(true)}
+                            className="add-btn"
+                        >
+                            <Edit3 size={18} />
+                            <span>Edit Profile</span>
+                        </button>
+                    ) : (
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <button 
+                                onClick={handleSave}
+                                disabled={saving}
+                                style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '8px', 
+                                    background: '#0fb48c', 
+                                    color: '#fff', 
+                                    border: 'none', 
+                                    padding: '10px 20px', 
+                                    borderRadius: '8px', 
+                                    fontWeight: '500', 
+                                    cursor: saving ? 'not-allowed' : 'pointer',
+                                    opacity: saving ? 0.7 : 1
+                                }}
+                            >
+                                <Save size={18} />
+                                <span>{saving ? "Saving..." : "Save Changes"}</span>
+                            </button>
+                            <button 
+                                onClick={handleCancel}
+                                style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '8px', 
+                                    background: '#f3f4f6', 
+                                    color: '#333', 
+                                    border: 'none', 
+                                    padding: '10px 20px', 
+                                    borderRadius: '8px', 
+                                    fontWeight: '500', 
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <X size={18} />
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '30px' }}>
@@ -159,32 +260,22 @@ export default function UserProfile() {
                     {/* Left Column - Quick Overview */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         <div className="form-card" style={{ textAlign: 'center', padding: '40px 24px' }}>
-                            <div style={{
-                                width: '120px',
-                                height: '120px',
-                                background: displayUser.role === 'Doctor' ? '#f3e5f5' : '#e7f7f3',
-                                color: displayUser.role === 'Doctor' ? '#7c3aed' : '#0fb48c',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '48px',
-                                fontWeight: 800,
-                                margin: '0 auto 20px'
-                            }}>
-                                {displayUser.role === 'Doctor' ? <Stethoscope size={48} /> : displayUser.name.charAt(0)}
-                            </div>
-                            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#1a1a1a' }}>{displayUser.name}</h2>
-                            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>{displayUser.id}</p>
+                            <ProfilePictureUpload 
+                                initialImage={displayFormData.profilePhoto} 
+                                onSave={handlePhotoSave} 
+                                userName={displayFormData.name} 
+                            />
+                            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#1a1a1a' }}>{displayFormData.name}</h2>
+                            <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>{displayFormData.id}</p>
                             <span style={{
-                                background: displayUser.role === 'Doctor' ? '#f3e5f5' : '#e7f7f3',
-                                color: displayUser.role === 'Doctor' ? '#7c3aed' : '#0fb48c',
+                                background: displayFormData.role === 'Doctor' ? '#f3e5f5' : '#e7f7f3',
+                                color: displayFormData.role === 'Doctor' ? '#7c3aed' : '#0fb48c',
                                 padding: '6px 16px',
                                 borderRadius: '20px',
                                 fontSize: '12px',
                                 fontWeight: 700
                             }}>
-                                {displayUser.role}
+                                {displayFormData.role}
                             </span>
                         </div>
 
@@ -219,36 +310,61 @@ export default function UserProfile() {
                                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Personal Information</h3>
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Full Name</label>
-                                    <p style={{ fontWeight: 600 }}>{displayUser.name}</p>
-                                </div>
-                                {displayUser.role === 'Doctor' && displayUser.specialty && (
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Specialty</label>
-                                        <p style={{ fontWeight: 600 }}>{displayUser.specialty}</p>
-                                    </div>
-                                )}
-                                {displayUser.role === 'Doctor' && displayUser.experienceYears && (
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Experience</label>
-                                        <p style={{ fontWeight: 600 }}>{displayUser.experienceYears} years</p>
-                                    </div>
-                                )}
-                                {displayUser.role === 'Patient' && (
+                                {isEditing ? (
                                     <>
                                         <div>
-                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Gender</label>
-                                            <p style={{ fontWeight: 600 }}>{displayUser.gender || 'N/A'}</p>
+                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>Full Name</label>
+                                            <input 
+                                                type="text"
+                                                value={displayFormData.name}
+                                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '8px', fontWeight: '500', boxSizing: 'border-box' }}
+                                            />
                                         </div>
                                         <div>
-                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Age</label>
-                                            <p style={{ fontWeight: 600 }}>{displayUser.age || 'N/A'}</p>
+                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>Email</label>
+                                            <input 
+                                                type="email"
+                                                value={displayFormData.email}
+                                                onChange={(e) => handleInputChange('email', e.target.value)}
+                                                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '8px', fontWeight: '500', boxSizing: 'border-box' }}
+                                            />
                                         </div>
+                                    </>
+                                ) : (
+                                    <>
                                         <div>
-                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Blood Group</label>
-                                            <p style={{ fontWeight: 600 }}>{displayUser.bloodGroup || 'N/A'}</p>
+                                            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Full Name</label>
+                                            <p style={{ fontWeight: 600 }}>{displayFormData.name}</p>
                                         </div>
+                                        {displayFormData.role === 'Doctor' && displayFormData.specialty && (
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Specialty</label>
+                                                <p style={{ fontWeight: 600 }}>{displayFormData.specialty}</p>
+                                            </div>
+                                        )}
+                                        {displayFormData.role === 'Doctor' && displayFormData.experienceYears && (
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Experience</label>
+                                                <p style={{ fontWeight: 600 }}>{displayFormData.experienceYears} years</p>
+                                            </div>
+                                        )}
+                                        {displayFormData.role === 'Patient' && (
+                                            <>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Gender</label>
+                                                    <p style={{ fontWeight: 600 }}>{displayFormData.gender || 'N/A'}</p>
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Age</label>
+                                                    <p style={{ fontWeight: 600 }}>{displayFormData.age || 'N/A'}</p>
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Blood Group</label>
+                                                    <p style={{ fontWeight: 600 }}>{displayFormData.bloodGroup || 'N/A'}</p>
+                                                </div>
+                                            </>
+                                        )}
                                     </>
                                 )}
                             </div>
@@ -265,14 +381,14 @@ export default function UserProfile() {
                                     <div style={{ padding: '10px', background: '#f8fafc', borderRadius: '10px' }}><Mail size={18} color="#64748b" /></div>
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '2px' }}>Email Address</label>
-                                        <p style={{ fontWeight: 600 }}>{displayUser.email}</p>
+                                        <p style={{ fontWeight: 600 }}>{displayFormData.email}</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                                     <div style={{ padding: '10px', background: '#f8fafc', borderRadius: '10px' }}><Phone size={18} color="#64748b" /></div>
                                     <div>
                                         <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '2px' }}>Phone Number</label>
-                                        <p style={{ fontWeight: 600 }}>{displayUser.phone || 'N/A'}</p>
+                                        <p style={{ fontWeight: 600 }}>{displayFormData.phone || 'N/A'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -287,7 +403,7 @@ export default function UserProfile() {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Joined Date</label>
-                                    <p style={{ fontWeight: 600 }}>{displayUser.joinDate}</p>
+                                    <p style={{ fontWeight: 600 }}>{displayFormData.joinDate}</p>
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '5px' }}>Account Status</label>
@@ -299,7 +415,7 @@ export default function UserProfile() {
                                         fontSize: '12px',
                                         fontWeight: 700
                                     }}>
-                                        {displayUser.status}
+                                        {displayFormData.status}
                                     </span>
                                 </div>
                             </div>

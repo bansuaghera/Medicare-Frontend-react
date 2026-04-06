@@ -15,6 +15,10 @@ const Doctor = sequelize.define('Doctor', {
       key: 'id'
     }
   },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   specialization: {
     type: DataTypes.STRING,
     allowNull: false
@@ -46,9 +50,5 @@ const Doctor = sequelize.define('Doctor', {
 }, {
   timestamps: true
 });
-
-// Associations
-User.hasOne(Doctor, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Doctor.belongsTo(User, { foreignKey: 'userId' });
 
 module.exports = Doctor;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import UserLayout from "../../layouts/UserLayout";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Clock, MapPin, Search } from "lucide-react";
+import { Calendar, Clock, Search } from "lucide-react";
 import API from "../../api/axiosConfig";
 import toast from "react-hot-toast";
 
@@ -22,14 +22,16 @@ export default function MyAppointments() {
                     id: app.id,
                     token: app.tokenNumber,
                     doctor: app.Doctor?.name || "Unassigned",
-                    specialty: app.Doctor?.Doctor?.specialization || "General",
+                    specialty: app.Doctor?.Doctor?.specialization || app.Doctor?.Doctor?.specialization || "General",
                     date: app.date,
                     time: app.time,
                     reason: app.reason || "Checkup",
                     status: app.status || "pending",
-                    actionable: app.status === "pending" || app.status === "in-progress"
+                    actionable: app.status && app.status !== "cancelled"
                 }));
-                setAppointments(myApts);
+                // Include completed in this view based on user request. 
+                const activeApts = myApts.filter(app => ['pending', 'in-progress', 'completed'].includes(app.status));
+                setAppointments(activeApts);
             }
         } catch (error) {
             toast.error("Failed to load appointments");
@@ -95,10 +97,15 @@ export default function MyAppointments() {
                     ) : filteredAppointments.length > 0 ? filteredAppointments.map((apt) => (
                         <div key={apt.id} style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                                <div>
-                                    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600', marginBottom: '4px' }}>TOKEN #{apt.token}</div>
-                                    <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0' }}>Dr. {apt.doctor}</h3>
-                                    <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>{apt.specialty} • {apt.reason}</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                    <div style={{ background: '#f8fafc', color: '#0fb48c', padding: '12px 20px', borderRadius: '12px', border: '2px solid #0fb48c', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: '80px' }}>
+                                        <span style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1px', color: '#64748b' }}>TOKEN</span>
+                                        <span style={{ fontSize: '24px', fontWeight: '900' }}>#{apt.token}</span>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0' }}>Dr. {apt.doctor}</h3>
+                                        <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>{apt.specialty} • {apt.reason}</p>
+                                    </div>
                                 </div>
                                 <span style={{ ...(getStatusStyle(apt.status)), padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '700' }}>
                                     {getStatusStyle(apt.status).label}
@@ -114,10 +121,6 @@ export default function MyAppointments() {
                                     <Clock size={18} style={{ color: '#0fb48c' }} />
                                     <span style={{ fontSize: '14px', fontWeight: '600' }}>{apt.time}</span>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569' }}>
-                                    <MapPin size={18} style={{ color: '#0fb48c' }} />
-                                    <span style={{ fontSize: '14px', fontWeight: '600' }}>{apt.room}</span>
-                                </div>
                             </div>
                             
                             {apt.actionable && (
@@ -129,8 +132,12 @@ export default function MyAppointments() {
                                         Cancel Appointment
                                     </button>
                                 </div>
+                            )}                            {!apt.actionable && apt.status === 'cancelled' && (
+                                <div style={{ marginTop: '12px', color: '#ef4444', fontWeight: 600 }}>Appointment has been cancelled.</div>
                             )}
-                        </div>
+                            {!apt.actionable && apt.status === 'completed' && (
+                                <div style={{ marginTop: '12px', color: '#0f766e', fontWeight: 600 }}>Appointment completed. Patient can still request cancel but approval may be needed.</div>
+                            )}                        </div>
                     )) : (
                         <div style={{ textAlign: 'center', padding: '64px', color: '#64748b', background: '#f8fafc', borderRadius: '16px', border: '2px dashed #e2e8f0' }}>
                             <Calendar size={48} style={{ margin: '0 auto 16px', opacity: 0.3 }} />

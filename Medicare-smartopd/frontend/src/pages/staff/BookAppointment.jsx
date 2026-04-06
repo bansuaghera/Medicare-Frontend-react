@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import StaffLayout from "../../layouts/StaffLayout";
-import { Calendar, Plus, Search, Eye, Trash2, Clock } from "lucide-react";
+import { Calendar, Plus, Search, Eye, Trash2, Clock, X } from "lucide-react";
 import API from "../../api/axiosConfig";
 import toast from "react-hot-toast";
 
@@ -11,13 +11,16 @@ export default function BookAppointment() {
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedIds, setSelectedIds] = useState(new Set());
+    const [detailsModal, setDetailsModal] = useState(null);
 
     const [form, setForm] = useState({
         patientId: "",
         doctorId: "",
         date: "",
         time: "",
-        reason: ""
+        reason: "",
+        isEmergency: false
     });
 
     useEffect(() => {
@@ -54,7 +57,7 @@ export default function BookAppointment() {
                 // Refresh list
                 const apptRes = await API.get("/appointments");
                 if (apptRes.data.success) setAppointments(apptRes.data.data);
-                setForm({ patientId: "", doctorId: "", date: "", time: "", reason: "" });
+                setForm({ patientId: "", doctorId: "", date: "", time: "", reason: "", isEmergency: false });
                 setTab("list");
             }
         } catch (err) {
@@ -72,6 +75,44 @@ export default function BookAppointment() {
         }
     };
 
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedIds(new Set(filtered.map(a => a.id)));
+        } else {
+            setSelectedIds(new Set());
+        }
+    };
+
+    const handleSelectItem = (id) => {
+        const newSelected = new Set(selectedIds);
+        if (newSelected.has(id)) {
+            newSelected.delete(id);
+        } else {
+            newSelected.add(id);
+        }
+        setSelectedIds(newSelected);
+    };
+
+    const handleDeleteSelected = async () => {
+        if (selectedIds.size === 0) {
+            toast.error("No appointments selected");
+            return;
+        }
+        if (!window.confirm(`Delete ${selectedIds.size} appointment(s)?`)) return;
+
+        const loadToast = toast.loading("Deleting appointments...");
+        try {
+            await Promise.all(Array.from(selectedIds).map(id => 
+                API.delete(`/appointments/${id}`)
+            ));
+            setAppointments(prev => prev.filter(a => !selectedIds.has(a.id)));
+            setSelectedIds(new Set());
+            toast.success("Appointments deleted", { id: loadToast });
+        } catch (error) {
+            toast.error("Failed to delete appointments", { id: loadToast });
+        }
+    };
+
     const filtered = appointments.filter(a =>
         (a.Patient?.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
         (a.Doctor?.name || "").toLowerCase().includes(searchTerm.toLowerCase())
@@ -79,11 +120,11 @@ export default function BookAppointment() {
 
     const getStatusStyle = (status) => {
         switch (status) {
-            case "pending": return { background: "#fef9c3", color: "#a16207" };
-            case "in-progress": return { background: "#dbeafe", color: "#1d4ed8" };
-            case "completed": return { background: "#dcfce7", color: "#166534" };
-            case "cancelled": return { background: "#fee2e2", color: "#ef4444" };
-            default: return { background: "#f3f4f6", color: "#666" };
+            case "pending": return { background: "#fef9c3", color: "#a16207", label: "Pending" };
+            case "in-progress": return { background: "#dbeafe", color: "#1d4ed8", label: "In Progress" };
+            case "completed": return { background: "#dcfce7", color: "#166534", label: "Completed" };
+            case "cancelled": return { background: "#fee2e2", color: "#ef4444", label: "Cancelled" };
+            default: return { background: "#f3f4f6", color: "#666", label: "Unknown" };
         }
     };
 
@@ -94,26 +135,51 @@ export default function BookAppointment() {
                     <h1 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "4px" }}>Appointments</h1>
                     <p style={{ color: "#666", fontSize: "14px" }}>Manage and book patient appointments</p>
                 </div>
-                <button
-                    onClick={() => setTab(tab === "list" ? "book" : "list")}
-                    style={{ display: "flex", alignItems: "center", gap: "8px", background: "#0fb48c", color: "#fff", border: "none", padding: "10px 20px", borderRadius: "8px", fontWeight: "500", cursor: "pointer", fontSize: "14px" }}
-                >
-                    {tab === "list" ? <><Plus size={18} /> Book New</> : <><Calendar size={18} /> View List</>}
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button
+                        onClick={() => { setForm(prev => ({ ...prev, isEmergency: true })); setTab(tab === "list" ? "book" : "list"); }}
+                        style={{ display: "flex", alignItems: "center", gap: "8px", background: "#ef4444", color: "#fff", border: "none", padding: "10px 20px", borderRadius: "8px", fontWeight: "700", cursor: "pointer", fontSize: "14px" }}
+                    >
+                        {tab === "list" ? <><Plus size={18} /> Add New Emergency Appointment</> : <><Calendar size={18} /> View List</>}
+                    </button>
+                    <button
+                        onClick={() => { setForm(prev => ({ ...prev, isEmergency: false })); setTab(tab === "list" ? "book" : "list"); }}
+                        style={{ display: "flex", alignItems: "center", gap: "8px", background: "#0fb48c", color: "#fff", border: "none", padding: "10px 20px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "14px" }}
+                    >
+                        {tab === "list" ? <><Plus size={18} /> Book Regular</> : <><Calendar size={18} /> View List</>}
+                    </button>
+                </div>
             </div>
 
             {tab === "list" ? (
                 <div style={{ background: "#fff", borderRadius: "12px", padding: "24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
-                    <div style={{ marginBottom: "20px", position: "relative", width: "300px" }}>
-                        <Search size={16} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#999" }} />
-                        <input
-                            type="text"
-                            placeholder="Search patient or doctor..."
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                            style={{ width: "100%", padding: "10px 10px 10px 36px", borderRadius: "8px", border: "1px solid #ddd", outline: "none", fontSize: "14px", boxSizing: "border-box" }}
-                        />
+                    <div style={{ marginBottom: "20px", display: "flex", gap: "16px", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+                        <div style={{ position: "relative", width: "300px" }}>
+                            <Search size={16} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#999" }} />
+                            <input
+                                type="text"
+                                placeholder="Search patient or doctor..."
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                style={{ width: "100%", padding: "10px 10px 10px 36px", borderRadius: "8px", border: "1px solid #ddd", outline: "none", fontSize: "14px", boxSizing: "border-box" }}
+                            />
+                        </div>
                     </div>
+
+                    {selectedIds.size > 0 && (
+                        <div style={{ background: "#f0f9ff", padding: "12px 16px", borderRadius: "8px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: "14px", fontWeight: "600", color: "#1e40af" }}>
+                                {selectedIds.size} appointment{selectedIds.size !== 1 ? "s" : ""} selected
+                            </span>
+                            <button
+                                onClick={handleDeleteSelected}
+                                style={{ display: "flex", alignItems: "center", gap: "6px", background: "#fef2f2", color: "#ef4444", border: "none", padding: "8px 14px", borderRadius: "6px", cursor: "pointer", fontSize: "13px", fontWeight: "600" }}
+                            >
+                                <Trash2 size={14} />
+                                Delete Selected
+                            </button>
+                        </div>
+                    )}
 
                     {loading ? (
                         <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>Loading appointments...</div>
@@ -126,37 +192,84 @@ export default function BookAppointment() {
                     ) : (
                         <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
                             <thead>
-                                <tr style={{ borderBottom: "2px solid #f0f0f0" }}>
+                                <tr style={{ borderBottom: "2px solid #f0f0f0", background: "#fbfbfb" }}>
+                                    <th style={{ padding: "14px 16px", color: "#64748b", fontWeight: "600", fontSize: "12px", width: "40px" }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.size === filtered.length && filtered.length > 0}
+                                            onChange={handleSelectAll}
+                                            style={{ cursor: "pointer" }}
+                                        />
+                                    </th>
                                     {["Token", "Patient", "Doctor", "Date", "Time", "Reason", "Status", "Actions"].map(h => (
-                                        <th key={h} style={{ padding: "12px 16px", color: "#64748b", fontWeight: "600", fontSize: "12px", letterSpacing: "0.5px" }}>{h.toUpperCase()}</th>
+                                        <th key={h} style={{ padding: "14px 16px", color: "#64748b", fontWeight: "600", fontSize: "12px", letterSpacing: "0.5px" }}>{h.toUpperCase()}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {filtered.map(appt => (
-                                    <tr key={appt.id} style={{ borderBottom: "1px solid #f9f9f9" }}>
-                                        <td style={{ padding: "16px", fontWeight: "700", color: "#0fb48c" }}>#{appt.tokenNumber}</td>
-                                        <td style={{ padding: "16px", fontWeight: "500", color: "#1e293b" }}>{appt.Patient?.name || "Unknown"}</td>
+                                    <tr key={appt.id} style={{ borderBottom: "1px solid #f5f5f5", background: appt.isEmergency ? "#fef2f2" : (selectedIds.has(appt.id) ? "#f0f9ff" : "#fff") }}>
+                                        <td style={{ padding: "16px", width: "40px" }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.has(appt.id)}
+                                                onChange={() => handleSelectItem(appt.id)}
+                                                style={{ cursor: "pointer" }}
+                                            />
+                                        </td>
+                                        <td style={{ padding: "16px", fontWeight: "700", color: "#0fb48c", fontSize: "16px" }}>#{appt.tokenNumber}</td>
+                                        <td style={{ padding: "16px", fontWeight: "500", color: "#1e293b" }}>
+                                            {appt.Patient?.name || "Unknown"}
+                                            {appt.isEmergency && <span style={{ marginLeft: "8px", background: "#fef2f2", color: "#ef4444", padding: "2px 6px", borderRadius: "10px", fontSize: "10px", fontWeight: "700", textTransform: "uppercase" }}>Emergency</span>}
+                                        </td>
                                         <td style={{ padding: "16px", color: "#475569" }}>{appt.Doctor?.name || "Assigning..."}</td>
                                         <td style={{ padding: "16px", color: "#475569" }}>{appt.date}</td>
                                         <td style={{ padding: "16px", color: "#475569" }}>{appt.time}</td>
                                         <td style={{ padding: "16px", color: "#475569" }}>{appt.reason || "Checkup"}</td>
                                         <td style={{ padding: "16px" }}>
-                                            <select
-                                                value={appt.status}
-                                                onChange={e => handleUpdateStatus(appt.id, e.target.value)}
-                                                style={{ ...getStatusStyle(appt.status), border: "none", borderRadius: "12px", padding: "4px 10px", fontSize: "12px", fontWeight: "600", cursor: "pointer", outline: "none" }}
-                                            >
-                                                <option value="pending">Pending</option>
-                                                <option value="in-progress">In Progress</option>
-                                                <option value="completed">Completed</option>
-                                                <option value="cancelled">Cancelled</option>
-                                            </select>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <span style={{ 
+                                                    ...getStatusStyle(appt.status), 
+                                                    padding: "4px 10px", 
+                                                    borderRadius: "12px", 
+                                                    fontSize: "11px", 
+                                                    fontWeight: "700", 
+                                                    textAlign: 'center',
+                                                    textTransform: 'uppercase'
+                                                }}>
+                                                    {getStatusStyle(appt.status).label}
+                                                </span>
+                                                {appt.status === "in-progress" && (
+                                                    <span style={{ fontSize: '10px', color: '#64748b', textAlign: 'center' }}>Called by Dr.</span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td style={{ padding: "16px" }}>
-                                            <button style={{ background: "none", border: "1px solid #e2e8f0", borderRadius: "6px", padding: "6px", cursor: "pointer", color: "#64748b" }}>
-                                                <Eye size={16} />
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                {appt.status === "pending" && (
+                                                    <button
+                                                        onClick={() => handleUpdateStatus(appt.id, "in-progress")}
+                                                        style={{ background: "#ebf2fc", color: "#4589f5", border: "none", padding: "6px 12px", borderRadius: "6px", cursor: "pointer", fontSize: "12px", fontWeight: "700" }}
+                                                    >
+                                                        Call In
+                                                    </button>
+                                                )}
+                                                {appt.status === "in-progress" && (
+                                                    <button
+                                                        onClick={() => handleUpdateStatus(appt.id, "completed")}
+                                                        style={{ background: "#0fb48c", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "6px", cursor: "pointer", fontSize: "12px", fontWeight: "700" }}
+                                                    >
+                                                        Complete
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={() => setDetailsModal(appt)}
+                                                    title="View Details"
+                                                    style={{ background: "#fff", border: "1px solid #eaeaea", borderRadius: "6px", padding: "6px", cursor: "pointer", color: "#666", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -237,6 +350,19 @@ export default function BookAppointment() {
                             />
                         </div>
 
+                        <div style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", gap: "10px", background: "#fef2f2", padding: "14px", borderRadius: "8px", border: "1px solid #fecaca" }}>
+                            <input
+                                type="checkbox"
+                                id="staffIsEmergency"
+                                checked={form.isEmergency}
+                                onChange={e => setForm(f => ({ ...f, isEmergency: e.target.checked }))}
+                                style={{ width: "18px", height: "18px", accentColor: "#ef4444", cursor: "pointer" }}
+                            />
+                            <label htmlFor="staffIsEmergency" style={{ fontSize: "14px", fontWeight: "600", color: "#b91c1c", cursor: "pointer", margin: 0 }}>
+                                Mark as Emergency (Priority)
+                            </label>
+                        </div>
+
                         <div style={{ gridColumn: "1 / -1", display: "flex", gap: "12px", marginTop: "8px" }}>
                             <button type="submit" style={{ background: "#0fb48c", color: "#fff", border: "none", padding: "12px 28px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
                                 <Calendar size={16} /> Book Appointment
@@ -246,6 +372,58 @@ export default function BookAppointment() {
                             </button>
                         </div>
                     </form>
+                </div>
+            )}
+
+            {detailsModal && (
+                <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+                    <div style={{ background: "#fff", borderRadius: "12px", padding: "32px", maxWidth: "500px", width: "90%", maxHeight: "90vh", overflowY: "auto" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                            <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#1e293b", margin: 0 }}>Appointment Details</h2>
+                            <button
+                                onClick={() => setDetailsModal(null)}
+                                style={{ background: "none", border: "none", cursor: "pointer", padding: "0", color: "#999" }}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Token Number</label>
+                                <p style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", margin: "4px 0 0 0" }}>#{detailsModal.tokenNumber}</p>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Patient Name</label>
+                                <p style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", margin: "4px 0 0 0" }}>{detailsModal.Patient?.name || "Unknown"}</p>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Patient Email</label>
+                                <p style={{ fontSize: "14px", color: "#475569", margin: "4px 0 0 0" }}>{detailsModal.Patient?.email || "N/A"}</p>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Doctor</label>
+                                <p style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", margin: "4px 0 0 0" }}>Dr. {detailsModal.Doctor?.name || "Assigning..."}</p>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Date</label>
+                                <p style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", margin: "4px 0 0 0" }}>{detailsModal.date}</p>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Time</label>
+                                <p style={{ fontSize: "16px", fontWeight: "600", color: "#1e293b", margin: "4px 0 0 0" }}>{detailsModal.time}</p>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Reason for Visit</label>
+                                <p style={{ fontSize: "14px", color: "#475569", margin: "4px 0 0 0" }}>{detailsModal.reason || "Checkup"}</p>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: "12px", color: "#888", fontWeight: "600" }}>Status</label>
+                                <p style={{ fontSize: "14px", fontWeight: "600", color: getStatusStyle(detailsModal.status).color, margin: "4px 0 0 0" }}>
+                                    {getStatusStyle(detailsModal.status).label}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </StaffLayout>
