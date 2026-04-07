@@ -86,8 +86,9 @@ export default function UserDashboard() {
                     totalVisits: d.myTotalVisits || 0,
                     prescriptions: d.myPrescriptionsCount || 0,
                     lastVisit: d.lastVisit,
-                    bloodGroup: d.bloodGroup || 'O+',
-                    latestVitals: d.latestVitals || { heartRate: "72 bpm", bp: "120/80", temp: "98.6°F", weight: "70 kg" },
+                    bloodGroup: d.bloodGroup || '---',
+                    medicalHistory: d.medicalHistory || '---',
+                    latestVitals: d.latestVitals || null,
                     latestMedicines: d.latestMedicines || [],
                     latestDiagnosis: d.latestDiagnosis
                 });
@@ -223,7 +224,7 @@ export default function UserDashboard() {
                                 <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#101828', margin: 0 }}>Vitals Overview</h3>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                {(stats.latestVitals || FETCHED_DUMMY_VITALS) && Object.entries(stats.latestVitals || FETCHED_DUMMY_VITALS).map(([key, val]) => (
+                                {stats.latestVitals ? Object.entries(stats.latestVitals).map(([key, val]) => (
                                     <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f9fafb', borderRadius: '20px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                             {getVitalIcon(key)}
@@ -231,7 +232,11 @@ export default function UserDashboard() {
                                         </div>
                                         <span style={{ fontSize: '18px', fontWeight: '900', color: '#101828' }}>{val}</span>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div style={{ textAlign: "center", padding: "20px", background: "#f8fafc", borderRadius: "16px", color: "#667085", fontSize: "14px" }}>
+                                        Not recorded yet
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -242,12 +247,16 @@ export default function UserDashboard() {
                                 Recent Medications
                             </h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                {(stats.latestMedicines.length > 0 ? stats.latestMedicines : FETCHED_DUMMY_MEDICINES).slice(0, 3).map((med, i) => (
+                                {stats.latestMedicines.length > 0 ? stats.latestMedicines.slice(0, 3).map((med, i) => (
                                     <div key={i} style={{ padding: '16px', background: '#fefce8', borderRadius: '16px', border: '1px solid #fef08a' }}>
                                         <p style={{ fontSize: '15px', fontWeight: '900', color: '#1e293b', margin: '0 0 4px 0' }}>{med.name}</p>
                                         <p style={{ fontSize: '12px', color: '#71717a', margin: 0 }}>{med.dosage} • {med.frequency}</p>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div style={{ textAlign: "center", padding: "20px", background: "#f8fafc", borderRadius: "16px", color: "#667085", fontSize: "14px" }}>
+                                        No active medications
+                                    </div>
+                                )}
                             </div>
                         </div>
 

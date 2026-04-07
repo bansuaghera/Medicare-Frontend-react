@@ -30,6 +30,7 @@ export default function AdminDashboard() {
         onlineDoctors: 0,
         revenueToday: 0
     });
+    const [activities, setActivities] = useState([]);
     const [weeklyData, setWeeklyData] = useState([]);
     const [upcomingAppointments, setUpcomingAppointments] = useState([]);
     const [seeding, setSeeding] = useState(false);
@@ -37,9 +38,10 @@ export default function AdminDashboard() {
     const fetchDashboardData = async () => {
         try {
             // Fetch dynamic stats from the database
-            const [statsRes, appointmentsRes] = await Promise.all([
+            const [statsRes, appointmentsRes, activitiesRes] = await Promise.all([
                 API.get("/users/dashboard/stats"),
-                API.get("/appointments").catch(() => ({ data: { data: [] } }))
+                API.get("/appointments").catch(() => ({ data: { data: [] } })),
+                API.get("/activities/system/recent?limit=5").catch(() => ({ data: [] }))
             ]);
 
             if (statsRes.data.success) {
@@ -54,6 +56,17 @@ export default function AdminDashboard() {
             }
             
             setUpcomingAppointments(appointmentsRes.data.data?.slice(0, 5) || []);
+            
+            // Map activities to the format expected by the component
+            // If API returns an object with 'activities' array, use that
+            const rawActivities = Array.isArray(activitiesRes.data) ? activitiesRes.data : (activitiesRes.data.activities || []);
+            const mappedActivities = rawActivities.map(act => ({
+                text: act.description || act.activityType,
+                time: new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                color: act.activityType.includes('emergency') ? '#ef4444' : 
+                       act.activityType.includes('prescription') ? '#0fb48c' : '#3b82f6'
+            }));
+            setActivities(mappedActivities);
         } catch (error) {
             console.error("Dashboard fetch error:", error);
         }
@@ -78,12 +91,6 @@ export default function AdminDashboard() {
             setSeeding(false);
         }
     };
-
-    const systemActivities = [
-        { text: 'Prescription issued #9021', time: '5m ago', color: '#0fb48c' },
-        { text: 'New Doctor registered', time: '1h ago', color: '#3b82f6' },
-        { text: 'Emergency alert in Ward 4', time: '2h ago', color: '#ef4444' }
-    ];
 
     return (
         <AdminLayout panelTitle="Admin Panel">
@@ -222,7 +229,7 @@ export default function AdminDashboard() {
                     ) : (
                         <div className="info-card">No appointments yet</div>
                     )}
-                    <SystemActivity activities={systemActivities} />
+                    <SystemActivity activities={activities} />
                 </div>
             </div>
         </AdminLayout>

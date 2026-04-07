@@ -45,7 +45,7 @@ export default function StaffDashboard() {
                     ...prev,
                     todayAppointments: data.totalAppointments || 0,
                     newPatients: data.totalPatients || 0,
-                    scheduledTomorrow: 0
+                    scheduledTomorrow: data.scheduledTomorrow || 0
                 }));
             }
 

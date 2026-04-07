@@ -461,13 +461,14 @@ exports.getDashboardStats = async (req, res) => {
             weeklyData.push({ name: weekDays[d.getDay()], count });
         }
 
-        let stats = {
+        const stats = {
             totalPatients,
             totalDoctors,
             totalStaff,
             totalUsers,
             totalAppointments,
             revenueToday: totalAppointments * 500,
+            scheduledTomorrow: await Appointment.count({ where: { date: tomorrow } }).catch(() => 0),
             weeklyData
         };
 
